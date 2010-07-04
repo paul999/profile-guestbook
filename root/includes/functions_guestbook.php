@@ -30,7 +30,7 @@ function handle_gb_post_delete($post_id, &$post_data)
 	{
 		$s_hidden_fields = build_hidden_fields(array(
 			'p'		=> $post_id,
-			'mode'	=> 'delete')
+			'gbmode'	=> 'delete')
 		);
 
 		if (confirm_box(true))
