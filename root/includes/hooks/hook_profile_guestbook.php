@@ -27,11 +27,6 @@ function hook_profile_guestbook(&$hook)
 {
 	global $template, $user;
 	
-	if (!isset($template->_rootref['MESSAGE_TEXT']) || !isset($template->_rootref['META']))
-	{
-		//return;
-	}
-	
 	// Make sure we only run this hook once, else we get the most weird errors :).
 	if (defined('HOOK_RUNNED'))
 	{
@@ -42,8 +37,6 @@ function hook_profile_guestbook(&$hook)
 	
 	global $phpbb_root_path, $phpEx;
 
-
-	$template->assign_var('TEST', 'test');
 	
 	if (!class_exists('guestbook'))
 	{

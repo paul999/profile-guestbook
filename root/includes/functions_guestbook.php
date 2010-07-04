@@ -193,7 +193,7 @@ function submit_gb_post($mode, $subject, $username, &$data, $update_message = tr
 		$first = '';
 		if ($mb['user_guestbook_posts'] == 0)
 		{
-			$first .= ', user_guestook_first_post_id = ' . $data['post_id'];
+			$first .= ', user_guestbook_first_post_id = ' . $data['post_id'];
 		}
 		
 		$sql = 'UPDATE ' . USERS_TABLE . ' SET user_guestbook_posts = user_guestbook_posts + 1, user_guestbook_last_post_id = ' . $data['post_id'] . $first . '  WHERE user_id = ' . $data['user_id'];
@@ -204,7 +204,7 @@ function submit_gb_post($mode, $subject, $username, &$data, $update_message = tr
 
 
 	// Update the posts table
-	if (isset($sql_data[GUESTBOOK_TABLE]['sql'])) // @TODO: Check if this actually happens.
+	if (isset($sql_data[GUESTBOOK_TABLE]['sql'])) 
 	{
 		$sql = 'UPDATE ' . GUESTBOOK_TABLE . '
 			SET ' . $db->sql_build_array('UPDATE', $sql_data[GUESTBOOK_TABLE]['sql']) . '

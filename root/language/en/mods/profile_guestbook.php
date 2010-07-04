@@ -38,13 +38,26 @@ if (empty($lang) || !is_array($lang))
 // Some characters you may want to copy&paste:
 // ’ » “ ” …
 //
+
+/**
+ * UMIL lang vars.
+ **/
 $lang = array_merge($lang, array(
-	'INSTALL_PROFILE_GUESTBOOK'		=> 'install Profile Guestbook',
+	'PROFILE_GUESTBOOK'			=> 'Profile Guestbook',
+	'INSTALL_PROFILE_GUESTBOOK'		=> 'Install Profile Guestbook',
 	'INSTALL_PROFILE_GUESTBOOK_CONFIRM'	=> 'Are you sure you want to install Profile Guestbook?',
-	'UPDATE_PROFILE_GUESTBOOK'		=> 'update Profile Guestbook',
-	'UPDATE_PROFILE_GUESTBOOK_CONFIRM'	=> 'Are you sure you want to update Profile Guestbook',
-	'UNINSTALL_PROFILE_GUESTBOOK'		=> 'uninstall Profile Guestbook',
-	'UNINSTALL_PROFILE_GUESTBOOK_CONFIRM'	=> 'Are you sure you want to uninstall Profile Guestbook',
+	'UPDATE_PROFILE_GUESTBOOK'		=> 'Update Profile Guestbook',
+	'UPDATE_PROFILE_GUESTBOOK_CONFIRM'	=> 'Are you sure you want to update Profile Guestbook?',
+	'UNINSTALL_PROFILE_GUESTBOOK'		=> 'Uninstall Profile Guestbook',
+	'UNINSTALL_PROFILE_GUESTBOOK_CONFIRM'	=> 'Are you sure you want to uninstall Profile Guestbook?',
 ));
 
+
+$lang = array_merge($lang, array(
+	'NO_POSTS_GUESTBOOK'	=> 'There are currently no posts in this guestbook',
+	'GUESTBOOK'		=> 'Guestbook',
+	'ABOUT_GUESTBOOK'	=> 'Welcome in this guestbook. You can write here your personal thoughts. Have fun posting!',
+	
+	'NO_TOPIC_ICON'		=> 'No icon',
+));
 ?>

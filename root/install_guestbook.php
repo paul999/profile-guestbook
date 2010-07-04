@@ -26,7 +26,7 @@ if (!file_exists($phpbb_root_path . 'umil/umil_auto.' . $phpEx))
 }
 
 // The name of the mod to be displayed during installation.
-$mod_name = 'PROFILE_GUESTBOOK_MOD';
+$mod_name = 'PROFILE_GUESTBOOK';
 
 /*
 * The name of the config variable which will hold the currently installed version
@@ -45,7 +45,7 @@ $version_config_name = 'pg_version';
 * 'UNINSTALL_' . $mod_name
 * 'UNINSTALL_' . $mod_name . '_CONFIRM'
 */
-$language_file = 'umil';
+$language_file = 'mods/profile_guestbook';
 
 /*
 * Options to display to the user (this is purely optional, if you do not need the options you do not have to set up this variable at all)
@@ -69,7 +69,11 @@ $options = array(
 * The version numbering must otherwise be compatible with the version_compare function - http://php.net/manual/en/function.version-compare.php
 */
 $versions = array(
-	'0.0.1-a1' => array(
+	'0.0.1' => array(
+		'config_add'	=> array(
+			array('profile_guestbook_enabled', 1),
+			
+		),
 		'permission_add' => array(
 			array('u_gb_post', 1),
 			array('u_gb_edit', 1),
@@ -85,24 +89,118 @@ $versions = array(
 			array('u_gb_icons', 1),
 			array('u_gb_ignoreflood', 1),		
 		),
-	),
-/*
-		'table_add' => array(
-			array('phpbb_test', array(
-					'COLUMNS'		=> array(
-						'test_id'		=> array('UINT', NULL, 'auto_increment'),
-						'test_text'		=> array('VCHAR_UNI', ''),
-						'test_bool'		=> array('BOOL', 0),
-					),
-					'PRIMARY_KEY'	=> 'test_id',
-					'KEYS'			=> array(
-						'test_bool'		=> array('INDEX', 'test_bool'),
-					),
+		'permission_set' => array(
+			array('ROLE_USER_STANDARD', 
+				array(
+					'u_gb_post',
+					'u_gb_edit',
+					'u_gb_delete',
+					'u_gb_view',
+					'u_gb_sig',
+					'u_gb_smilies',
+					'u_gb_bbcode',
+					'u_gb_img',
+					'u_gb_flash',
+					'u_gb_icons',
 				),
 			),
-		),*/
+			array('ROLE_USER_LIMITED',
+				array(
+					'u_gb_view',
+				),					
+			),
+			array('ROLE_USER_FULL',
+				array(
+					'u_gb_post',
+					'u_gb_edit',
+					'u_gb_delete',
+					'u_gb_view',
+					'u_gb_sig',
+					'u_gb_smilies',
+					'u_gb_bbcode',
+					'u_gb_img',
+					'u_gb_flash',
+					'u_gb_icons',
+					'u_gb_ignoreflood',		
+				),	
+			),
+			array('ROLE_USER_NOAVATAR',
+				array(
+					'u_gb_post',
+					'u_gb_edit',
+					'u_gb_delete',
+					'u_gb_view',
+					'u_gb_sig',
+					'u_gb_smilies',
+					'u_gb_bbcode',
+					'u_gb_img',
+					'u_gb_flash',
+					'u_gb_icons',
+				),
+			),	
+			array('ROLE_USER_NEW_MEMBER',
+				array(
+					'u_gb_view',
+				),
+			),	
+			array('GUESTS', 'u_gb_view', 'group'),	
+			array('ROLE_MOD_STANDARD',
+				array(
+					'm_gb_delete',
+					'm_gb_edit',
+				),
+			),
+			array('ROLE_MOD_SIMPLE',
+				array(
+					'm_gb_delete',
+					'm_gb_edit',
+				),
+			),
+			array('ROLE_MOD_FULL',
+				array(
+					'm_gb_delete',
+					'm_gb_edit',
+				),
+			),
+		),
+		'table_column_add' => array(
+			array('phpbb_users', 'user_guestbook_posts', array('UINT', 0)),
+			array('phpbb_users', 'user_guestbook_first_post_id', array('UINT', 0)),			
+			array('phpbb_users', 'user_guestbook_last_post_id', array('UINT', 0)),			
+		),
+		'table_add' => array(
+			array('phpbb_guestbook', array(
+					'COLUMNS'		=> array(
+						'post_id'				=> array('UINT', NULL, 'auto_increment'),
+						'user_id'				=> array('UINT', 0),
+						'poster_id'				=> array('UINT', 0),
+						'icon_id'				=> array('UINT', 0),
+						'poster_ip'				=> array('VCHAR:40', ''),
+						'post_time'				=> array('TIMESTAMP', 0),
+						'enable_bbcode'			=> array('BOOL', 1),
+						'enable_smilies'		=> array('BOOL', 1),
+						'enable_magic_url'		=> array('BOOL', 1),
+						'enable_sig'			=> array('BOOL', 1),
+						'post_username'			=> array('VCHAR_UNI:255', ''),
+						'post_subject'			=> array('STEXT_UNI', '', 'true_sort'),
+						'post_text'				=> array('MTEXT_UNI', ''),
+						'post_checksum'			=> array('VCHAR:32', ''),
+						'bbcode_bitfield'		=> array('VCHAR:255', ''),
+						'bbcode_uid'			=> array('VCHAR:8', ''),
+						'post_postcount'		=> array('BOOL', 1),
+					),
+					'PRIMARY_KEY'	=> 'post_id',
+					'KEYS'			=> array(
+						'poster_ip'				=> array('INDEX', 'poster_ip'),
+						'poster_id'				=> array('INDEX', 'poster_id'),
+						'post_username'			=> array('INDEX', 'post_username'),
+						'tid_post_time'			=> array('INDEX', array('post_id', 'post_time')),
+					),
 
-
+				),
+			),
+		),
+	),
 );
 
 // Include the UMIF Auto file and everything else will be handled automatically.

@@ -28,11 +28,11 @@ class guestbook
 	 */
 	public function __construct()
 	{
-		global $config, $auth, $member;
+		global $config, $auth, $member, $user;
 		
 		$this->enabled = false;
 
-		if (!$config['guestbook_enabled'])
+		if (!$config['profile_guestbook_enabled'])
 		{
 			return;
 		}
@@ -53,6 +53,8 @@ class guestbook
 			$this->user_id	= (int)$member['user_id'];		
 			$this->member	= $member;
 		}
+		
+		$user->add_lang('mods/profile_guestbook');
 	}
 	
 	/**
@@ -160,8 +162,6 @@ class guestbook
 
 			'S_IS_LOCKED'			=> (true) ? false : true, // @TODO, value correct
 			'S_GUESTBOOK_ACTION' 		=> append_sid("{$phpbb_root_path}memberlist.$phpEx", "u={$this->user_id}&amp;gbmode=display&amp;mode=viewprofile"),
-
-			'S_VIEWTOPIC'			=> true,
 
 			'S_DISPLAY_POST_INFO'	=> true, //@TODO perm
 			'S_DISPLAY_REPLY_INFO'	=> true, //@TODO perm
@@ -779,9 +779,9 @@ class guestbook
 				'SIGNATURE'			=> ($row['enable_sig']) ? $user_cache[$poster_id]['sig'] : '',
 
 				'MINI_POST_IMG'			=> ($post_unread) ? $user->img('icon_post_target_unread', 'NEW_POST') : $user->img('icon_post_target', 'POST'),
-				'POST_ICON_IMG'			=> (!empty($row['icon_id']) && $gb_data['enable_icons']) ? $icons[$row['icon_id']]['img'] : '',
-				'POST_ICON_IMG_WIDTH'	=> (!empty($row['icon_id']) && !$gb_data['enable_icons']) ? $icons[$row['icon_id']]['width'] : '',
-				'POST_ICON_IMG_HEIGHT'	=> (!empty($row['icon_id']) && !$gb_data['enable_icons']) ? $icons[$row['icon_id']]['height'] : '',
+				'POST_ICON_IMG'			=> (!empty($row['icon_id'])) ? $icons[$row['icon_id']]['img'] : '',
+				'POST_ICON_IMG_WIDTH'	=> (!empty($row['icon_id'])) ? $icons[$row['icon_id']]['width'] : '',
+				'POST_ICON_IMG_HEIGHT'	=> (!empty($row['icon_id'])) ? $icons[$row['icon_id']]['height'] : '',
 				'ICQ_STATUS_IMG'		=> $user_cache[$poster_id]['icq_status_img'],
 				'ONLINE_IMG'			=> ($poster_id == ANONYMOUS || !$config['load_onlinetrack']) ? '' : (($user_cache[$poster_id]['online']) ? $user->img('icon_user_online', 'ONLINE') : $user->img('icon_user_offline', 'OFFLINE')),
 				'S_ONLINE'				=> ($poster_id == ANONYMOUS || !$config['load_onlinetrack']) ? false : (($user_cache[$poster_id]['online']) ? true : false),
@@ -1140,7 +1140,9 @@ class guestbook
 			$post_data['enable_bbcode']		= ($config['allow_bbcode'] && $user->optionget('bbcode')) ? true : false;
 			$post_data['enable_urls']		= true;
 		}
-
+		$post_data['enable_icons']		= true;
+		
+		
 		$post_data['enable_magic_url'] = $post_data['drafts'] = false;
 
 		$check_value = (($post_data['enable_bbcode']+1) << 8) + (($post_data['enable_smilies']+1) << 4) + (($post_data['enable_urls']+1) << 2) + (($post_data['enable_sig']+1) << 1);
@@ -1169,7 +1171,7 @@ class guestbook
 			$post_data['username']			= utf8_normalize_nfc(request_var('username', $post_data['username'], true));
 			$post_data['topic_time_limit']	= request_var('topic_time_limit', (($mode != 'post') ? (int) $post_data['topic_time_limit'] : 0));
 
-			if ($post_data['enable_icons'] && $auth->acl_get('u_gb_icons', $forum_id))
+			if ($post_data['enable_icons'] && $auth->acl_get('u_gb_icons'))
 			{
 				$post_data['icon_id'] = request_var('icon', (int) $post_data['icon_id']);
 			}
@@ -1177,7 +1179,7 @@ class guestbook
 			$post_data['enable_bbcode']		= (!$bbcode_status || isset($_POST['disable_bbcode'])) ? false : true;
 			$post_data['enable_smilies']	= (!$smilies_status || isset($_POST['disable_smilies'])) ? false : true;
 			$post_data['enable_urls']		= (isset($_POST['disable_magic_url'])) ? 0 : 1;
-			$post_data['enable_sig']		= (!$config['allow_sig'] || !$auth->acl_get('f_sigs') || !$auth->acl_get('u_gb_sig')) ? false : ((isset($_POST['attach_sig']) && $user->data['is_registered']) ? true : false);// @todo auth
+			$post_data['enable_sig']		= (!$config['allow_sig'] || !$auth->acl_get('f_sigs') || !$auth->acl_get('u_gb_sig')) ? false : ((isset($_POST['attach_sig']) && $user->data['is_registered']) ? true : false);
 
 			if ($config['allow_topic_notify'] && $user->data['is_registered'])
 			{
