@@ -36,7 +36,7 @@ class guestbook
 		{
 			return;
 		}
-		else if(false && !$auth->acl_get('u_guestbook_view'))// @TODO, auth check!
+		else if(!$auth->acl_get('u_gb_view'))
 		{
 			return;
 		}
@@ -134,6 +134,8 @@ class guestbook
 		
 		$hilit_words	= request_var('hilit', '', true);
 
+
+
 		$template->assign_vars(array(
 			'POST_IMG' 			=> (true) ? $user->img('button_topic_locked', 'FORUM_LOCKED') : $user->img('button_topic_new', 'POST_NEW_TOPIC'), //@TODO, correct button
 			'QUOTE_IMG' 			=> $user->img('icon_post_quote', 'REPLY_WITH_QUOTE'),
@@ -157,9 +159,6 @@ class guestbook
 			'WARN_IMG'			=> $user->img('icon_user_warn', 'WARN_USER'),
 
 			'S_IS_LOCKED'			=> (true) ? false : true, // @TODO, value correct
-/*			'S_SELECT_SORT_DIR' 	=> $s_sort_dir,
-			'S_SELECT_SORT_KEY' 	=> $s_sort_key,
-			'S_SELECT_SORT_DAYS' 	=> $s_limit_days,*/
 			'S_GUESTBOOK_ACTION' 		=> append_sid("{$phpbb_root_path}memberlist.$phpEx", "u={$this->user_id}&amp;gbmode=display&amp;mode=viewprofile"),
 
 			'S_VIEWTOPIC'			=> true,
@@ -167,7 +166,7 @@ class guestbook
 			'S_DISPLAY_POST_INFO'	=> true, //@TODO perm
 			'S_DISPLAY_REPLY_INFO'	=> true, //@TODO perm
 			
-			'U_POST_REPLY_TOPIC' 	=> (true || $auth->acl_get('f_reply') || $user->data['user_id'] == ANONYMOUS) ? append_sid("{$phpbb_root_path}memberlist.$phpEx", "u={$this->user_id}&amp;gbmode=post&amp;mode=viewprofile") : '', // @TODO permission
+			'U_POST_REPLY_TOPIC' 	=> ($auth->acl_get('u_gb_post') || $user->data['user_id'] == ANONYMOUS) ? append_sid("{$phpbb_root_path}memberlist.$phpEx", "u={$this->user_id}&amp;gbmode=post&amp;mode=viewprofile") : '', 
 		));
 
 		// This rather complex gaggle of code handles querying for topics but
@@ -276,7 +275,7 @@ class guestbook
 			$total_posts = (int) $db->sql_fetchfield('num_posts');
 			$db->sql_freeresult($result);
 
-			$limit_posts_time = "AND p.post_time >= $min_post_time ";
+			$limit_posts_time = "AND g.post_time >= $min_post_time ";
 
 			if (isset($_POST['sort']))
 			{
@@ -285,7 +284,7 @@ class guestbook
 		}
 		else
 		{
-			$total_posts = $gb_replies + 1;
+			$total_posts = $gb_replies;
 			$limit_posts_time = '';
 		}
 
@@ -339,6 +338,10 @@ class guestbook
 			'PAGINATION' 	=> $pagination,
 			'PAGE_NUMBER' 	=> on_page($total_posts, $config['posts_per_page'], $start),
 			'TOTAL_POSTS'	=> ($total_posts == 1) ? $user->lang['VIEW_TOPIC_POST'] : sprintf($user->lang['VIEW_TOPIC_POSTS'], $total_posts),
+			
+			'S_SELECT_SORT_DIR' 	=> $s_sort_dir,
+			'S_SELECT_SORT_KEY' 	=> $s_sort_key,
+			'S_SELECT_SORT_DAYS' 	=> $s_limit_days,			
 		));
 
 
@@ -378,8 +381,8 @@ class guestbook
 		}
 
 		// Container for user details, only process once
-		$post_list = $user_cache = $id_cache = $attachments = $attach_list = $rowset = $update_count = $post_edit_list = array();
-		$has_attachments = $display_notice = false;
+		$post_list = $user_cache = $id_cache = $rowset = $update_count = $post_edit_list = array();
+
 		$bbcode_bitfield = '';
 		$i = $i_total = 0;
 
@@ -459,38 +462,31 @@ class guestbook
 				'user_id'			=> $row['user_id'],
 				'username'			=> $row['username'],
 				'user_colour'		=> $row['user_colour'],
-//				'topic_id'			=> $row['topic_id'],
-//				'forum_id'			=> $row['forum_id'],
-//				'post_subject'		=> $row['post_subject'],
-//				'post_edit_count'	=> $row['post_edit_count'],
-//				'post_edit_time'	=> $row['post_edit_time'],
-//				'post_edit_reason'	=> $row['post_edit_reason'],
-//				'post_edit_user'	=> $row['post_edit_user'],
-//				'post_edit_locked'	=> $row['post_edit_locked'],
+
+				'post_subject'		=> $row['post_subject'],
 
 				// Make sure the icon actually exists
-//				'icon_id'			=> (isset($icons[$row['icon_id']]['img'], $icons[$row['icon_id']]['height'], $icons[$row['icon_id']]['width'])) ? $row['icon_id'] : 0,
-				'post_approved'		=> true, //$row['post_approved'],
-//				'post_reported'		=> $row['post_reported'],
-//				'post_username'		=> $row['post_username'],
+				'icon_id'			=> (isset($icons[$row['icon_id']]['img'], $icons[$row['icon_id']]['height'], $icons[$row['icon_id']]['width'])) ? $row['icon_id'] : 0,
+				'post_approved'		=> true,
+				'post_username'		=> $row['post_username'],
 				'post_text'			=> $row['post_text'],
-/*				'bbcode_uid'		=> $row['bbcode_uid'],
+				'bbcode_uid'		=> $row['bbcode_uid'],
 				'bbcode_bitfield'	=> $row['bbcode_bitfield'],
 				'enable_smilies'	=> $row['enable_smilies'],
-				'enable_sig'		=> $row['enable_sig'],*/
+				'enable_sig'		=> $row['enable_sig'],
 				'friend'			=> $row['friend'],
 				'foe'				=> $row['foe'],
 			);
 
 			// Define the global bbcode bitfield, will be used to load bbcodes
-//			$bbcode_bitfield = $bbcode_bitfield | base64_decode($row['bbcode_bitfield']);
+			$bbcode_bitfield = $bbcode_bitfield | base64_decode($row['bbcode_bitfield']);
 
 			// Is a signature attached? Are we going to display it?
-/*			if ($row['enable_sig'] && $config['allow_sig'] && $user->optionget('viewsigs'))
+			if ($row['enable_sig'] && $config['allow_sig'] && $user->optionget('viewsigs'))
 			{
 				$bbcode_bitfield = $bbcode_bitfield | base64_decode($row['user_sig_bbcode_bitfield']);
 			}
-*/
+
 			// Cache various user specific data ... so we don't have to recompute
 			// this each time the same user appears on this page
 			if (!isset($user_cache[$poster_id]))
@@ -676,78 +672,6 @@ class guestbook
 		}
 		unset($id_cache);
 
-		// Pull attachment data
-		if (sizeof($attach_list))
-		{
-			if ($auth->acl_get('u_download') && $auth->acl_get('f_download', $forum_id))
-			{
-				$sql = 'SELECT *
-					FROM ' . ATTACHMENTS_TABLE . '
-					WHERE ' . $db->sql_in_set('post_msg_id', $attach_list) . '
-						AND in_message = 0
-					ORDER BY filetime DESC, post_msg_id ASC';
-				$result = $db->sql_query($sql);
-
-				while ($row = $db->sql_fetchrow($result))
-				{
-					$attachments[$row['post_msg_id']][] = $row;
-				}
-				$db->sql_freeresult($result);
-
-				// No attachments exist, but post table thinks they do so go ahead and reset post_attach flags
-				if (!sizeof($attachments))
-				{
-					$sql = 'UPDATE ' . POSTS_TABLE . '
-						SET post_attachment = 0
-						WHERE ' . $db->sql_in_set('post_id', $attach_list);
-					$db->sql_query($sql);
-
-					// We need to update the topic indicator too if the complete topic is now without an attachment
-					if (sizeof($rowset) != $total_posts)
-					{
-						// Not all posts are displayed so we query the db to find if there's any attachment for this topic
-						$sql = 'SELECT a.post_msg_id as post_id
-							FROM ' . ATTACHMENTS_TABLE . ' a, ' . POSTS_TABLE . " p
-							WHERE p.topic_id = $topic_id
-								AND p.post_approved = 1
-								AND p.topic_id = a.topic_id";
-						$result = $db->sql_query_limit($sql, 1);
-						$row = $db->sql_fetchrow($result);
-						$db->sql_freeresult($result);
-
-						if (!$row)
-						{
-							$sql = 'UPDATE ' . TOPICS_TABLE . "
-								SET topic_attachment = 0
-								WHERE topic_id = $topic_id";
-							$db->sql_query($sql);
-						}
-					}
-					else
-					{
-						$sql = 'UPDATE ' . TOPICS_TABLE . "
-							SET topic_attachment = 0
-							WHERE topic_id = $topic_id";
-						$db->sql_query($sql);
-					}
-				}
-				else if ($has_attachments && !$topic_data['topic_attachment'])
-				{
-					// Topic has approved attachments but its flag is wrong
-					$sql = 'UPDATE ' . TOPICS_TABLE . "
-						SET topic_attachment = 1
-						WHERE topic_id = $topic_id";
-					$db->sql_query($sql);
-
-					$topic_data['topic_attachment'] = 1;
-				}
-			}
-			else
-			{
-				$display_notice = true;
-			}
-		}
-
 		// Instantiate BBCode if need be
 		if ($bbcode_bitfield !== '')
 		{
@@ -794,7 +718,7 @@ class guestbook
 			$message = censor_text($row['post_text']);
 
 			// Second parse bbcode here
-			if (false && $row['bbcode_bitfield'])// @TODO fix bbcode.
+			if ($row['bbcode_bitfield'])
 			{
 				$bbcode->bbcode_second_pass($message, $row['bbcode_uid'], $row['bbcode_bitfield']);
 			}
@@ -802,13 +726,8 @@ class guestbook
 			$message = bbcode_nl2br($message);
 			$message = smiley_text($message);
 
-			if (!empty($attachments[$row['post_id']]))
-			{
-				parse_attachments($forum_id, $message, $attachments[$row['post_id']], $update_count);
-			}
-
 			// Replace naughty words such as farty pants
-//			$row['post_subject'] = censor_text($row['post_subject']); // @TODO fix me.
+			$row['post_subject'] = censor_text($row['post_subject']);
 
 			// Highlight active words (primarily for search)
 			if ($highlight_match)
@@ -817,72 +736,6 @@ class guestbook
 				$row['post_subject'] = preg_replace('#(?!<.*)(?<!\w)(' . $highlight_match . ')(?!\w|[^<>]*(?:</s(?:cript|tyle))?>)#is', '<span class="posthilit">\1</span>', $row['post_subject']);
 			}
 
-			// Editing information
-/*			if (($row['post_edit_count'] && $config['display_last_edited']) || $row['post_edit_reason'])
-			{
-				// Get usernames for all following posts if not already stored
-				if (!sizeof($post_edit_list) && ($row['post_edit_reason'] || ($row['post_edit_user'] && !isset($user_cache[$row['post_edit_user']]))))
-				{
-					// Remove all post_ids already parsed (we do not have to check them)
-					$post_storage_list = (!$store_reverse) ? array_slice($post_list, $i) : array_slice(array_reverse($post_list), $i);
-
-					$sql = 'SELECT DISTINCT u.user_id, u.username, u.user_colour
-						FROM ' . POSTS_TABLE . ' p, ' . USERS_TABLE . ' u
-						WHERE ' . $db->sql_in_set('p.post_id', $post_storage_list) . '
-							AND p.post_edit_count <> 0
-							AND p.post_edit_user <> 0
-							AND p.post_edit_user = u.user_id';
-					$result2 = $db->sql_query($sql);
-					while ($user_edit_row = $db->sql_fetchrow($result2))
-					{
-						$post_edit_list[$user_edit_row['user_id']] = $user_edit_row;
-					}
-					$db->sql_freeresult($result2);
-
-					unset($post_storage_list);
-				}
-
-				$l_edit_time_total = ($row['post_edit_count'] == 1) ? $user->lang['EDITED_TIME_TOTAL'] : $user->lang['EDITED_TIMES_TOTAL'];
-
-				if ($row['post_edit_reason'])
-				{
-					// User having edited the post also being the post author?
-					if (!$row['post_edit_user'] || $row['post_edit_user'] == $poster_id)
-					{
-						$display_username = get_username_string('full', $poster_id, $row['username'], $row['user_colour'], $row['post_username']);
-					}
-					else
-					{
-						$display_username = get_username_string('full', $row['post_edit_user'], $post_edit_list[$row['post_edit_user']]['username'], $post_edit_list[$row['post_edit_user']]['user_colour']);
-					}
-
-					$l_edited_by = sprintf($l_edit_time_total, $display_username, $user->format_date($row['post_edit_time'], false, true), $row['post_edit_count']);
-				}
-				else
-				{
-					if ($row['post_edit_user'] && !isset($user_cache[$row['post_edit_user']]))
-					{
-						$user_cache[$row['post_edit_user']] = $post_edit_list[$row['post_edit_user']];
-					}
-
-					// User having edited the post also being the post author?
-					if (!$row['post_edit_user'] || $row['post_edit_user'] == $poster_id)
-					{
-						$display_username = get_username_string('full', $poster_id, $row['username'], $row['user_colour'], $row['post_username']);
-					}
-					else
-					{
-						$display_username = get_username_string('full', $row['post_edit_user'], $user_cache[$row['post_edit_user']]['username'], $user_cache[$row['post_edit_user']]['user_colour']);
-					}
-
-					$l_edited_by = sprintf($l_edit_time_total, $display_username, $user->format_date($row['post_edit_time'], false, true), $row['post_edit_count']);
-				}
-			}
-			else
-			{
-				$l_edited_by = '';
-			}
-*/
 			$cp_row = array();
 
 			//
@@ -890,30 +743,17 @@ class guestbook
 			{
 				$cp_row = (isset($profile_fields_cache[$poster_id])) ? $cp->generate_profile_fields_template('show', false, $profile_fields_cache[$poster_id]) : array();
 			}
-			
-/*			
-			$post_unread = (isset($topic_tracking_info[$topic_id]) && $row['post_time'] > $topic_tracking_info[$topic_id]) ? true : false;
 
-			$s_first_unread = false;
-			if (!$first_unread && $post_unread)
-			{
-				$s_first_unread = $first_unread = true;
-			}
-*/
-			$edit_allowed = ($user->data['is_registered'] && ($auth->acl_get('m_edit') || (
+			$edit_allowed = ($user->data['is_registered'] && ($auth->acl_get('m_gb_edit') || (
 				$user->data['user_id'] == $poster_id &&
-				$auth->acl_get('f_edit') &&
-				!$row['post_edit_locked'] &&
+				$auth->acl_get('u_gb_edit') &&
 				($row['post_time'] > time() - ($config['edit_time'] * 60) || !$config['edit_time'])
 			)));
 
-			$delete_allowed = ($user->data['is_registered'] && ($auth->acl_get('m_delete') || (
+			$delete_allowed = ($user->data['is_registered'] && ($auth->acl_get('m_gb_delete') || (
 				$user->data['user_id'] == $poster_id &&
-				$auth->acl_get('f_delete') &&
-				$topic_data['topic_last_post_id'] == $row['post_id'] &&
-				($row['post_time'] > time() - ($config['delete_time'] * 60) || !$config['delete_time']) &&
-				// we do not want to allow removal of the last post if a moderator locked it!
-				!$row['post_edit_locked']
+				$auth->acl_get('u_gb_delete') &&
+				($row['post_time'] > time() - ($config['delete_time'] * 60) || !$config['delete_time'])
 			)));
 
 			//
@@ -934,24 +774,21 @@ class guestbook
 				'POSTER_AGE'		=> $user_cache[$poster_id]['age'],
 
 				'POST_DATE'			=> $user->format_date($row['post_time'], false, ($view == 'print') ? true : false),
-//				'POST_SUBJECT'		=> $row['post_subject'], // fix me.
+				'POST_SUBJECT'		=> $row['post_subject'], 
 				'MESSAGE'			=> $message,
-//				'SIGNATURE'			=> ($row['enable_sig']) ? $user_cache[$poster_id]['sig'] : '',
-//				'EDITED_MESSAGE'	=> $l_edited_by,
-//				'EDIT_REASON'		=> $row['post_edit_reason'],
+				'SIGNATURE'			=> ($row['enable_sig']) ? $user_cache[$poster_id]['sig'] : '',
 
 				'MINI_POST_IMG'			=> ($post_unread) ? $user->img('icon_post_target_unread', 'NEW_POST') : $user->img('icon_post_target', 'POST'),
-//				'POST_ICON_IMG'			=> ($gb_data['enable_icons'] && !empty($row['icon_id'])) ? $icons[$row['icon_id']]['img'] : '',
-//				'POST_ICON_IMG_WIDTH'	=> ($gb_data['enable_icons'] && !empty($row['icon_id'])) ? $icons[$row['icon_id']]['width'] : '',
-//				'POST_ICON_IMG_HEIGHT'	=> ($gb_data['enable_icons'] && !empty($row['icon_id'])) ? $icons[$row['icon_id']]['height'] : '',
+				'POST_ICON_IMG'			=> (!empty($row['icon_id']) && $gb_data['enable_icons']) ? $icons[$row['icon_id']]['img'] : '',
+				'POST_ICON_IMG_WIDTH'	=> (!empty($row['icon_id']) && !$gb_data['enable_icons']) ? $icons[$row['icon_id']]['width'] : '',
+				'POST_ICON_IMG_HEIGHT'	=> (!empty($row['icon_id']) && !$gb_data['enable_icons']) ? $icons[$row['icon_id']]['height'] : '',
 				'ICQ_STATUS_IMG'		=> $user_cache[$poster_id]['icq_status_img'],
 				'ONLINE_IMG'			=> ($poster_id == ANONYMOUS || !$config['load_onlinetrack']) ? '' : (($user_cache[$poster_id]['online']) ? $user->img('icon_user_online', 'ONLINE') : $user->img('icon_user_offline', 'OFFLINE')),
 				'S_ONLINE'				=> ($poster_id == ANONYMOUS || !$config['load_onlinetrack']) ? false : (($user_cache[$poster_id]['online']) ? true : false),
 
-//				'U_EDIT'			=> ($edit_allowed) ? append_sid("{$phpbb_root_path}posting.$phpEx", "mode=edit&amp;f=$forum_id&amp;p={$row['post_id']}") : '',
-//				'U_QUOTE'			=> ($auth->acl_get('f_reply', $forum_id)) ? append_sid("{$phpbb_root_path}posting.$phpEx", "mode=quote&amp;f=$forum_id&amp;p={$row['post_id']}") : '',
-//				'U_INFO'			=> ($auth->acl_get('m_info', $forum_id)) ? append_sid("{$phpbb_root_path}mcp.$phpEx", "i=main&amp;mode=post_details&amp;f=$forum_id&amp;p=" . $row['post_id'], true, $user->session_id) : '',
-//				'U_DELETE'			=> ($delete_allowed) ? append_sid("{$phpbb_root_path}posting.$phpEx", "mode=delete&amp;f=$forum_id&amp;p={$row['post_id']}") : '',
+				'U_EDIT'			=> ($edit_allowed) ? append_sid("{$phpbb_root_path}memberlist.$phpEx", "mode=viewprofile&amp;u={$this->user_id}&amp;gbmode=edit&amp;p={$row['post_id']}") : '',
+				'U_QUOTE'			=> ($auth->acl_get('u_gb_post')) ? append_sid("{$phpbb_root_path}memberlist.$phpEx", "mode=viewprofile&amp;u={$this->user_id}&amp;gbmode=quote&amp;p={$row['post_id']}") : '',
+				'U_DELETE'			=> ($delete_allowed) ? append_sid("{$phpbb_root_path}memberlist.$phpEx", "mode=viewprofile&amp;u={$this->user_id}&amp;gbmode=delete&amp;p={$row['post_id']}") : '',
 
 				'U_PROFILE'		=> $user_cache[$poster_id]['profile'],
 				'U_SEARCH'		=> $user_cache[$poster_id]['search'],
@@ -964,10 +801,7 @@ class guestbook
 				'U_YIM'			=> $user_cache[$poster_id]['yim'],
 				'U_JABBER'		=> $user_cache[$poster_id]['jabber'],
 
-///				'U_REPORT'			=> ($auth->acl_get('f_report', $forum_id)) ? append_sid("{$phpbb_root_path}report.$phpEx", 'f=' . $forum_id . '&amp;p=' . $row['post_id']) : '',
-//				'U_MCP_REPORT'		=> ($auth->acl_get('m_report', $forum_id)) ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=reports&amp;mode=report_details&amp;f=' . $forum_id . '&amp;p=' . $row['post_id'], true, $user->session_id) : '',
-//				'U_MCP_APPROVE'		=> ($auth->acl_get('m_approve', $forum_id)) ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=queue&amp;mode=approve_details&amp;f=' . $forum_id . '&amp;p=' . $row['post_id'], true, $user->session_id) : '',
-//				'U_MINI_POST'		=> append_sid("{$phpbb_root_path}viewtopic.$phpEx", 'p=' . $row['post_id']) . (($gb_data['topic_type'] == POST_GLOBAL) ? '&amp;f=' . $forum_id : '') . '#p' . $row['post_id'],
+				'U_MINI_POST'		=> append_sid("{$phpbb_root_path}memberlist.$phpEx", "mode=viewprofile&amp;u={$this->user_id}") . '#p' . $row['post_id'],
 				'U_NEXT_POST_ID'	=> ($i < $i_total && isset($rowset[$post_list[$i + 1]])) ? $rowset[$post_list[$i + 1]]['post_id'] : '',
 				'U_PREV_POST_ID'	=> $prev_post_id,
 				'U_NOTES'			=> ($auth->acl_getf_global('m_')) ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=notes&amp;mode=user_notes&amp;u=' . $poster_id, true, $user->session_id) : '',
@@ -976,18 +810,12 @@ class guestbook
 				'POST_ID'			=> $row['post_id'],
 				'POSTER_ID'			=> $poster_id,
 
-				'S_HAS_ATTACHMENTS'	=> (!empty($attachments[$row['post_id']])) ? true : false,
 				'S_POST_UNAPPROVED'	=> false,
-//				'S_POST_REPORTED'	=> ($row['post_reported'] && $auth->acl_get('m_report', $forum_id)) ? true : false,
-				'S_DISPLAY_NOTICE'	=> $display_notice && $row['post_attachment'],
+
 				'S_FRIEND'			=> ($row['friend']) ? true : false,
 				'S_UNREAD_POST'		=> $post_unread,
-//				'S_FIRST_UNREAD'	=> $s_first_unread,
-				'S_CUSTOM_FIELDS'	=> (isset($cp_row['row']) && sizeof($cp_row['row'])) ? true : false,
-//				'S_TOPIC_POSTER'	=> ($gb_data['topic_poster'] == $poster_id) ? true : false,
 
-				'S_IGNORE_POST'		=> ($row['hide_post']) ? true : false,
-				'L_IGNORE_POST'		=> ($row['hide_post']) ? sprintf($user->lang['POST_BY_FOE'], get_username_string('full', $poster_id, $row['username'], $row['user_colour'], $row['post_username']), '<a href="' . $viewtopic_url . "&amp;p={$row['post_id']}&amp;view=show#p{$row['post_id']}" . '">', '</a>') : '',
+				'S_CUSTOM_FIELDS'	=> (isset($cp_row['row']) && sizeof($cp_row['row'])) ? true : false,
 			);
 
 			if (isset($cp_row['row']) && sizeof($cp_row['row']))
@@ -1006,114 +834,34 @@ class guestbook
 				}
 			}
 
-			// Display not already displayed Attachments for this post, we already parsed them. ;)
-			if (!empty($attachments[$row['post_id']]))
-			{
-				foreach ($attachments[$row['post_id']] as $attachment)
-				{
-					$template->assign_block_vars('postrow.attachment', array(
-						'DISPLAY_ATTACHMENT'	=> $attachment)
-					);
-				}
-			}
-
 			$prev_post_id = $row['post_id'];
 
 			unset($rowset[$post_list[$i]]);
-			unset($attachments[$row['post_id']]);
 		}
 		unset($rowset, $user_cache);
 
-		// Update topic view and if necessary attachment view counters ... but only for humans and if this is the first 'page view'
-/*		if (isset($user->data['session_page']) && !$user->data['is_bot'] && (strpos($user->data['session_page'], '&t=' . $topic_id) === false || isset($user->data['session_created'])))
-		{
-			$sql = 'UPDATE ' . TOPICS_TABLE . '
-				SET topic_views = topic_views + 1, topic_last_view_time = ' . time() . "
-				WHERE topic_id = $topic_id";
-			$db->sql_query($sql);
-
-			// Update the attachment download counts
-			if (sizeof($update_count))
-			{
-				$sql = 'UPDATE ' . ATTACHMENTS_TABLE . '
-					SET download_count = download_count + 1
-					WHERE ' . $db->sql_in_set('attach_id', array_unique($update_count));
-				$db->sql_query($sql);
-			}
-		}*/
 
 
-		// Only mark topic if it's currently unread. Also make sure we do not set topic tracking back if earlier pages are viewed.
-/*		if (isset($topic_tracking_info[$topic_id]) && $topic_data['topic_last_post_time'] > $topic_tracking_info[$topic_id] && $max_post_time > $topic_tracking_info[$topic_id])
-		{
-			markread('topic', (($topic_data['topic_type'] == POST_GLOBAL) ? 0 : $forum_id), $topic_id, $max_post_time);
-
-			// Update forum info
-			$all_marked_read = update_forum_tracking_info((($topic_data['topic_type'] == POST_GLOBAL) ? 0 : $forum_id), $topic_data['forum_last_post_time'], (isset($topic_data['forum_mark_time'])) ? $topic_data['forum_mark_time'] : false, false);
-		}
-		else
-		{
-			$all_marked_read = true;
-		}
-
-		// If there are absolutely no more unread posts in this forum and unread posts shown, we can savely show the #unread link
-		if ($all_marked_read)
-		{
-			if ($post_unread)
-			{
-				$template->assign_vars(array(
-					'U_VIEW_UNREAD_POST'	=> '#unread',
-				));
-			}
-			else if (isset($topic_tracking_info[$topic_id]) && $topic_data['topic_last_post_time'] > $topic_tracking_info[$topic_id])
-			{
-				$template->assign_vars(array(
-					'U_VIEW_UNREAD_POST'	=> append_sid("{$phpbb_root_path}viewtopic.$phpEx", "f=$forum_id&amp;t=$topic_id&amp;view=unread") . '#unread',
-				));
-			}
-		}
-		else if (!$all_marked_read)
-		{
-			$last_page = ((floor($start / $config['posts_per_page']) + 1) == max(ceil($total_posts / $config['posts_per_page']), 1)) ? true : false;
-
-			// What can happen is that we are at the last displayed page. If so, we also display the #unread link based in $post_unread
-			if ($last_page && $post_unread)
-			{
-				$template->assign_vars(array(
-					'U_VIEW_UNREAD_POST'	=> '#unread',
-				));
-			}
-			else if (!$last_page)
-			{
-				$template->assign_vars(array(
-					'U_VIEW_UNREAD_POST'	=> append_sid("{$phpbb_root_path}viewtopic.$phpEx", "f=$forum_id&amp;t=$topic_id&amp;view=unread") . '#unread',
-				));
-			}
-		}
-*/
 		// let's set up quick_reply
 		$s_quick_reply = false;
-		if ($user->data['is_registered'] && $config['allow_quick_reply'] /*&& ($topic_data['forum_flags'] & FORUM_FLAG_QUICK_REPLY)*/ /* @TODO PERMISSION@ &&$auth->acl_get('f_reply', $forum_id)*/)
+		if ($user->data['is_registered'] && $config['allow_quick_reply'] && $auth->acl_get('u_gb_post'))
 		{
 			// Quick reply enabled forum
-//			$s_quick_reply = (($topic_data['forum_status'] == ITEM_UNLOCKED && $topic_data['topic_status'] == ITEM_UNLOCKED) || $auth->acl_get('m_edit', $forum_id)) ? true : false;
-			$s_quick_reply = true;//enable just for now.
+
+			$s_quick_reply = true;
 		}
 
 		if ($s_quick_reply)
 		{
 			add_form_key('posting');
 
-			$s_attach_sig	= $config['allow_sig'] && $user->optionget('attachsig') && $auth->acl_get('f_sigs') && $auth->acl_get('u_sig');
-			$s_smilies		= $config['allow_smilies'] && $user->optionget('smilies') && $auth->acl_get('f_smilies');
-			$s_bbcode		= $config['allow_bbcode'] && $user->optionget('bbcode') && $auth->acl_get('f_bbcode');
+			$s_attach_sig	= $config['allow_sig'] && $user->optionget('attachsig') && $auth->acl_get('f_sigs') && $auth->acl_get('u_gb_sig');
+			$s_smilies		= $config['allow_smilies'] && $user->optionget('smilies') && $auth->acl_get('u_gb_smilies');
+			$s_bbcode		= $config['allow_bbcode'] && $user->optionget('bbcode') && $auth->acl_get('u_gb_bbcode');
 			$s_notify		= $config['allow_topic_notify'] && ($user->data['user_notify'] );
 
 			$qr_hidden_fields = array(
-				'topic_cur_post_id'		=> (int) $this->member['user_guestbook_last_post_id'],
 				'lastclick'				=> (int) time(),
-				//'topic_id'				=> (int) $topic_data['topic_id'],
-				//'forum_id'				=> (int) $forum_id,
 			);
 
 			// Originally we use checkboxes and check with isset(), so we only provide them if they would be checked
@@ -1122,13 +870,12 @@ class guestbook
 			(!$config['allow_post_links'])	? $qr_hidden_fields['disable_magic_url'] = 1	: true;
 			($s_attach_sig)					? $qr_hidden_fields['attach_sig'] = 1			: true;
 			($s_notify)						? $qr_hidden_fields['notify'] = 1				: true;
-//				($gb_data['topic_status'] == ITEM_LOCKED) ? $qr_hidden_fields['lock_topic'] = 1 : true;
 
 			$template->assign_vars(array(
 				'S_QUICK_REPLY'			=> true,
-//					'U_QR_ACTION'			=> append_sid("{$phpbb_root_path}posting.$phpEx", "mode=reply&amp;f=$forum_id&amp;t=$topic_id"),
+					'U_QR_ACTION'			=> append_sid("{$phpbb_root_path}memberlist.$phpEx", "mode=viewprofile&amp;u={$this->user_id}&amp;gbmode=post"),
 				'QR_HIDDEN_FIELDS'		=> build_hidden_fields($qr_hidden_fields),
-				'SUBJECT'				=> 'Re: ' . censor_text($gb_data['post_subject']),
+				'SUBJECT'				=> '',
 			));
 		}
 		// now I have the urge to wash my hands :(
@@ -1187,16 +934,10 @@ class guestbook
 					$user->setup('posting');
 					trigger_error('NO_POST');
 				}
-				/*$forum_id = (!$f_id) ? $forum_id : $f_id;
-
-				$sql = 'SELECT f.*, t.*, p.*, u.username, u.username_clean, u.user_sig, u.user_sig_bbcode_uid, u.user_sig_bbcode_bitfield
-					FROM ' . POSTS_TABLE . ' p, ' . TOPICS_TABLE . ' t, ' . FORUMS_TABLE . ' f, ' . USERS_TABLE . " u
-					WHERE p.post_id = $post_id
-						AND t.topic_id = p.topic_id
-						AND u.user_id = p.poster_id
-						AND (f.forum_id = t.forum_id
-							OR f.forum_id = $forum_id)" .
-						(($auth->acl_get('m_approve', $forum_id)) ? '' : 'AND p.post_approved = 1');*/
+				$sql = 'SELECT g.*, u.*
+					FROM  ' . GUESTBOOK_TABLE . ' g, ' . USERS_TABLE . ' u
+						WHERE u.user_id = g.poster_id
+							AND post_id = ' . (int)$post_id;
 			break;
 
 			case 'smilies':
@@ -1227,14 +968,7 @@ class guestbook
 				trigger_error('NO_POST');
 			}
 		}
-		// Not able to reply to unapproved posts/topics
-		// TODO: add more descriptive language key
-		// @TODO unnub permission
-/*		if (false || $auth->acl_get('m_approve') && ((($mode == 'reply' || $mode == 'bump') && !$post_data['topic_approved']) || ($mode == 'quote' && !$post_data['post_approved'])))
-		{
-			trigger_error(($mode == 'reply' || $mode == 'bump') ? 'TOPIC_UNAPPROVED' : 'POST_UNAPPROVED');
-		}
-*/
+
 		if ($mode == 'popup')
 		{
 			upload_popup($post_data['forum_style']);
@@ -1259,7 +993,7 @@ class guestbook
 		}
 
 		// Is the user able to read within this forum?
-		if (false && !$auth->acl_get('f_read', $forum_id))// @TODO auth.
+		if (false && !$auth->acl_get('u_gb_view', $forum_id))
 		{
 			if ($user->data['user_id'] != ANONYMOUS)
 			{
@@ -1272,19 +1006,12 @@ class guestbook
 		// Permission to do the action asked?
 		$is_authed = false;
 		
-		$is_authed = true;//@TODO auth
-/*
+		$is_authed = true;
+
 		switch ($mode)
 		{
 			case 'post':
-				if ($auth->acl_get('f_post', $forum_id))
-				{
-					$is_authed = true;
-				}
-			break;
-
-			case 'bump':
-				if ($auth->acl_get('f_bump', $forum_id))
+				if ($auth->acl_get('u_gb_post'))
 				{
 					$is_authed = true;
 				}
@@ -1297,27 +1024,27 @@ class guestbook
 			// no break;
 
 			case 'reply':
-				if ($auth->acl_get('f_reply', $forum_id))
+				if ($auth->acl_get('u_gb_post'))
 				{
 					$is_authed = true;
 				}
 			break;
 
 			case 'edit':
-				if ($user->data['is_registered'] && $auth->acl_gets('f_edit', 'm_edit', $forum_id))
+				if ($user->data['is_registered'] && $auth->acl_gets('u_gb_edit', 'm_gb_edit'))
 				{
 					$is_authed = true;
 				}
 			break;
 
 			case 'delete':
-				if ($user->data['is_registered'] && $auth->acl_gets('f_delete', 'm_delete', $forum_id))
+				if ($user->data['is_registered'] && $auth->acl_gets('u_gb_delete', 'm_gb_delete'))
 				{
 					$is_authed = true;
 				}
 			break;
 		}
-*/
+
 		if (!$is_authed)
 		{
 			$check_auth = ($mode == 'quote') ? 'reply' : $mode;
@@ -1332,7 +1059,7 @@ class guestbook
 
 		// Can we edit this post ... if we're a moderator with rights then always yes
 		// else it depends on editing times, lock status and if we're the correct user
-		if ($mode == 'edit' && !$auth->acl_get('m_edit', $forum_id))
+		if ($mode == 'edit' && !$auth->acl_get('m_gb_edit'))
 		{
 			if ($user->data['user_id'] != $post_data['poster_id'])
 			{
@@ -1353,16 +1080,8 @@ class guestbook
 		// Handle delete mode...
 		if ($mode == 'delete')
 		{
-			handle_gb_post_delete($forum_id, $topic_id, $post_id, $post_data);
+			handle_gb_post_delete($post_id, $post_data);
 			return;
-		}
-
-
-
-		// Subject length limiting to 60 characters if first post...
-		if ($mode == 'post' || ($mode == 'edit' && $post_data['topic_first_post_id'] == $post_data['post_id']))
-		{
-			$template->assign_var('S_NEW_MESSAGE', true);
 		}
 
 		// Determine some vars
@@ -1379,28 +1098,8 @@ class guestbook
 		$post_data['post_subject_md5']	= (isset($post_data['post_subject']) && $mode == 'edit') ? md5($post_data['post_subject']) : '';
 		$post_data['post_subject']		= (in_array($mode, array('quote', 'edit'))) ? $post_data['post_subject'] : ((isset($post_data['topic_title'])) ? $post_data['topic_title'] : '');
 		$post_data['topic_time_limit']	= (isset($post_data['topic_time_limit'])) ? (($post_data['topic_time_limit']) ? (int) $post_data['topic_time_limit'] / 86400 : (int) $post_data['topic_time_limit']) : 0;
-		$post_data['poll_length']		= (!empty($post_data['poll_length'])) ? (int) $post_data['poll_length'] / 86400 : 0;
-		$post_data['poll_start']		= (!empty($post_data['poll_start'])) ? (int) $post_data['poll_start'] : 0;
+
 		$post_data['icon_id']			= (!isset($post_data['icon_id']) || in_array($mode, array('quote', 'reply'))) ? 0 : (int) $post_data['icon_id'];
-		$post_data['poll_options']		= array();
-
-		// Get Poll Data
-		if ($post_data['poll_start'])
-		{
-			$sql = 'SELECT poll_option_text
-				FROM ' . POLL_OPTIONS_TABLE . "
-				WHERE topic_id = $topic_id
-				ORDER BY poll_option_id";
-			$result = $db->sql_query($sql);
-
-			while ($row = $db->sql_fetchrow($result))
-			{
-				$post_data['poll_options'][] = trim($row['poll_option_text']);
-			}
-			$db->sql_freeresult($result);
-		}
-
-		$orig_poll_options_size = sizeof($post_data['poll_options']);
 
 		$message_parser = new parse_message();
 
@@ -1411,7 +1110,7 @@ class guestbook
 		}
 
 		// Set some default variables
-		$uninit = array('post_attachment' => 0, 'poster_id' => $user->data['user_id'], 'enable_magic_url' => 0, 'topic_status' => 0, 'topic_type' => POST_NORMAL, 'post_subject' => '', 'topic_title' => '', 'post_time' => 0, 'post_edit_reason' => '', 'notify_set' => 0);
+		$uninit = array('poster_id' => $user->data['user_id'], 'enable_magic_url' => 0, 'post_subject' => '', 'topic_title' => '', 'post_time' => 0, 'post_edit_reason' => '', 'notify_set' => 0);
 
 		foreach ($uninit as $var_name => $default_value)
 		{
@@ -1454,29 +1153,23 @@ class guestbook
 		}
 
 		// HTML, BBCode, Smilies, Images and Flash status
-		// @TODO auth
-		$bbcode_status	= ($config['allow_bbcode'] && $auth->acl_get('f_bbcode')) ? true : false;
-		$smilies_status	= ($config['allow_smilies'] && $auth->acl_get('f_smilies')) ? true : false;
-		$img_status		= ($bbcode_status && $auth->acl_get('f_img')) ? true : false;
+		$bbcode_status	= ($config['allow_bbcode'] && $auth->acl_get('u_gb_bbcode')) ? true : false;
+		$smilies_status	= ($config['allow_smilies'] && $auth->acl_get('u_gb_smilies')) ? true : false;
+		$img_status		= ($bbcode_status && $auth->acl_get('u_gb_img')) ? true : false;
 		$url_status		= ($config['allow_post_links']) ? true : false;
-		$flash_status	= ($bbcode_status && $auth->acl_get('f_flash') && $config['allow_post_flash']) ? true : false;
+		$flash_status	= ($bbcode_status && $auth->acl_get('u_gb_flash') && $config['allow_post_flash']) ? true : false;
 		$quote_status	= true;
 
 
 		if ($submit || $preview || $refresh)
 		{
-			$post_data['topic_cur_post_id']	= request_var('topic_cur_post_id', 0);
 			$post_data['post_subject']		= utf8_normalize_nfc(request_var('subject', '', true));
 			$message_parser->message		= utf8_normalize_nfc(request_var('message', '', true));
 
 			$post_data['username']			= utf8_normalize_nfc(request_var('username', $post_data['username'], true));
-			$post_data['post_edit_reason']	= (!empty($_POST['edit_reason']) && $mode == 'edit' && $auth->acl_get('m_edit', $forum_id)) ? utf8_normalize_nfc(request_var('edit_reason', '', true)) : '';
-
-			$post_data['orig_topic_type']	= $post_data['topic_type'];
-			$post_data['topic_type']		= request_var('topic_type', (($mode != 'post') ? (int) $post_data['topic_type'] : POST_NORMAL));
 			$post_data['topic_time_limit']	= request_var('topic_time_limit', (($mode != 'post') ? (int) $post_data['topic_time_limit'] : 0));
 
-			if (false && $post_data['enable_icons'] && $auth->acl_get('f_icons', $forum_id))//@TODO auth
+			if ($post_data['enable_icons'] && $auth->acl_get('u_gb_icons', $forum_id))
 			{
 				$post_data['icon_id'] = request_var('icon', (int) $post_data['icon_id']);
 			}
@@ -1484,7 +1177,7 @@ class guestbook
 			$post_data['enable_bbcode']		= (!$bbcode_status || isset($_POST['disable_bbcode'])) ? false : true;
 			$post_data['enable_smilies']	= (!$smilies_status || isset($_POST['disable_smilies'])) ? false : true;
 			$post_data['enable_urls']		= (isset($_POST['disable_magic_url'])) ? 0 : 1;
-			$post_data['enable_sig']		= (!$config['allow_sig'] || !$auth->acl_get('f_sigs') || !$auth->acl_get('u_sig')) ? false : ((isset($_POST['attach_sig']) && $user->data['is_registered']) ? true : false);// @todo auth
+			$post_data['enable_sig']		= (!$config['allow_sig'] || !$auth->acl_get('f_sigs') || !$auth->acl_get('u_gb_sig')) ? false : ((isset($_POST['attach_sig']) && $user->data['is_registered']) ? true : false);// @todo auth
 
 			if ($config['allow_topic_notify'] && $user->data['is_registered'])
 			{
@@ -1494,10 +1187,6 @@ class guestbook
 			{
 				$notify = false;
 			}
-
-			$topic_lock			= (isset($_POST['lock_topic'])) ? true : false;
-			$post_lock			= (isset($_POST['lock_post'])) ? true : false;
-			$poll_delete		= (isset($_POST['poll_delete'])) ? true : false;
 
 			if ($submit)
 			{
@@ -1509,58 +1198,8 @@ class guestbook
 				$status_switch = 1;
 			}
 
-			// If replying/quoting and last post id has changed
-			// give user option to continue submit or return to post
-			// notify and show user the post made between his request and the final submit
-			if (($mode == 'reply' || $mode == 'quote') && $post_data['topic_cur_post_id'] && $post_data['topic_cur_post_id'] != $post_data['topic_last_post_id'])
-			{
-				// Only do so if it is allowed forum-wide
-				if ($post_data['forum_flags'] & FORUM_FLAG_POST_REVIEW)
-				{
-					if (topic_review($topic_id, $forum_id, 'post_review', $post_data['topic_cur_post_id']))
-					{
-						$template->assign_var('S_POST_REVIEW', true);
-					}
-
-					$submit = false;
-					$refresh = true;
-				}
-			}
-
 			// Grab md5 'checksum' of new message
 			$message_md5 = md5($message_parser->message);
-
-			// If editing and checksum has changed we know the post was edited while we're editing
-			// Notify and show user the changed post
-			if ($mode == 'edit' && $post_data['forum_flags'] & FORUM_FLAG_POST_REVIEW)
-			{
-				$edit_post_message_checksum = request_var('edit_post_message_checksum', '');
-				$edit_post_subject_checksum = request_var('edit_post_subject_checksum', '');
-
-				// $post_data['post_checksum'] is the checksum of the post submitted in the meantime
-				// $message_md5 is the checksum of the post we're about to submit
-				// $edit_post_message_checksum is the checksum of the post we're editing
-				// ...
-
-				// We make sure nobody else made exactly the same change
-				// we're about to submit by also checking $message_md5 != $post_data['post_checksum']
-				if (($edit_post_message_checksum !== '' && $edit_post_message_checksum != $post_data['post_checksum'] && $message_md5 != $post_data['post_checksum'])
-				 || ($edit_post_subject_checksum !== '' && $edit_post_subject_checksum != $post_data['post_subject_md5'] && md5($post_data['post_subject']) != $post_data['post_subject_md5']))
-				{
-					if (topic_review($topic_id, $forum_id, 'post_review_edit', $post_id))
-					{
-						$template->assign_vars(array(
-							'S_POST_REVIEW'			=> true,
-
-							'L_POST_REVIEW'			=> $user->lang['POST_REVIEW_EDIT'],
-							'L_POST_REVIEW_EXPLAIN'	=> $user->lang['POST_REVIEW_EDIT_EXPLAIN'],
-						));
-					}
-
-					$submit = false;
-					$refresh = true;
-				}
-			}
 
 			// Check checksum ... don't re-parse message if the same
 			$update_message = ($mode != 'edit' || $message_md5 != $post_data['post_checksum'] || $status_switch || strlen($post_data['bbcode_uid']) < BBCODE_UID_LEN) ? true : false;
@@ -1590,7 +1229,7 @@ class guestbook
 				$message_parser->bbcode_bitfield = $post_data['bbcode_bitfield'];
 			}
 
-			if ($mode != 'edit' && !$preview && !$refresh && $config['flood_interval'] && !$auth->acl_get('f_ignoreflood'))
+			if ($mode != 'edit' && !$preview && !$refresh && $config['flood_interval'] && !$auth->acl_get('u_gb_ignoreflood'))
 			{
 				// Flood check
 				$last_post_time = 0;
@@ -1652,13 +1291,6 @@ class guestbook
 			}
 
 			// Parse subject
-			if (!$preview && !$refresh && utf8_clean_string($post_data['post_subject']) === '' && ($mode == 'post' || ($mode == 'edit' && $post_data['topic_first_post_id'] == $post_id)))
-			{
-				$error[] = $user->lang['EMPTY_SUBJECT'];
-			}
-
-			$post_data['poll_last_vote'] = (isset($post_data['poll_last_vote'])) ? $post_data['poll_last_vote'] : 0;
-
 
 			if (sizeof($message_parser->warn_msg))
 			{
@@ -1681,6 +1313,7 @@ class guestbook
 				if ($submit)
 				{
 					$data = array(
+						'user_id'			=> $this->user_id,
 						'topic_title'			=> (empty($post_data['topic_title'])) ? $post_data['post_subject'] : $post_data['topic_title'],
 						'post_id'				=> (int) $post_id,
 						'icon_id'				=> (int) $post_data['icon_id'],
@@ -1698,40 +1331,24 @@ class guestbook
 						'bbcode_bitfield'		=> $message_parser->bbcode_bitfield,
 						'bbcode_uid'			=> $message_parser->bbcode_uid,
 						'message'				=> $message_parser->message,
+						'guestbook'			=> $this,
 					);
 
-					if ($mode == 'edit')
-					{
-						$data['topic_replies_real'] = $post_data['topic_replies_real'];
-						$data['topic_replies'] = $post_data['topic_replies'];
-					}
-
 					// The last parameter tells submit_post if search indexer has to be run
-					submit_gb_post($mode, $post_data['post_subject'], $post_data['username'], $post_data['topic_type'], $poll, $data, $update_message, ($update_message || $update_subject) ? true : false);
+					submit_gb_post($mode, $post_data['post_subject'], $post_data['username'], $data, $update_message, ($update_message || $update_subject) ? true : false);
 					
-					$redirect_url = append_sid("{$phpbb_root_path}memberlist.php{$phpEx}", "mode=viewprofile&amp;gbmode=display&amp;u={$this->user_id}");
+					$redirect_url = append_sid("{$phpbb_root_path}memberlist.{$phpEx}", "mode=viewprofile&amp;gbmode=display&amp;u={$this->user_id}");
 
 					if ($config['enable_post_confirm'] && !$user->data['is_registered'] && (isset($captcha) && $captcha->is_solved() === true) && ($mode == 'post' || $mode == 'reply' || $mode == 'quote'))
 					{
 						$captcha->reset();
 					}
 
-					// Check the permissions for post approval. Moderators are not affected.
-					if ((!$auth->acl_get('f_noapprove', $data['forum_id']) && !$auth->acl_get('m_approve', $data['forum_id']) && empty($data['force_approved_state'])) || (isset($data['force_approved_state']) && !$data['force_approved_state']))
-					{
-						meta_refresh(10, $redirect_url);
-						$message = ($mode == 'edit') ? $user->lang['POST_EDITED_MOD'] : $user->lang['POST_STORED_MOD'];
-						$message .= (($user->data['user_id'] == ANONYMOUS) ? '' : ' '. $user->lang['POST_APPROVAL_NOTIFY']);
-					}
-					else
-					{
-						meta_refresh(3, $redirect_url);
+					meta_refresh(3, $redirect_url);
 
-						$message = ($mode == 'edit') ? 'POST_EDITED' : 'POST_STORED';
-						$message = $user->lang[$message] . '<br /><br />' . sprintf($user->lang['VIEW_MESSAGE'], '<a href="' . $redirect_url . '">', '</a>');
-					}
-
-					$message .= '<br /><br />' . sprintf($user->lang['RETURN_FORUM'], '<a href="' . append_sid("{$phpbb_root_path}viewforum.$phpEx", 'f=' . $data['forum_id']) . '">', '</a>');
+					$message = ($mode == 'edit') ? 'POST_EDITED' : 'POST_STORED';
+					$message = $user->lang[$message] . '<br /><br />' . sprintf($user->lang['VIEW_MESSAGE'], '<a href="' . $redirect_url . '">', '</a>');
+		
 					trigger_error($message);
 				}
 			}
@@ -1749,7 +1366,7 @@ class guestbook
 			$preview_signature_bitfield = ($mode == 'edit') ? $post_data['user_sig_bbcode_bitfield'] : $user->data['user_sig_bbcode_bitfield'];
 
 			// Signature
-			if ($post_data['enable_sig'] && $config['allow_sig'] && $preview_signature && $auth->acl_get('f_sigs', $forum_id))
+			if ($post_data['enable_sig'] && $config['allow_sig'] && $preview_signature && $auth->acl_get('u_gb_sig', $forum_id))
 			{
 				$parse_sig = new parse_message($preview_signature);
 				$parse_sig->bbcode_uid = $preview_signature_uid;
@@ -1813,8 +1430,6 @@ class guestbook
 			$post_data['post_subject'] = ((strpos($post_data['post_subject'], 'Re: ') !== 0) ? 'Re: ' : '') . censor_text($post_data['post_subject']);
 		}
 
-		$attachment_data = $message_parser->attachment_data;
-		$filename_data = $message_parser->filename_data;
 		$post_data['post_text'] = $message_parser->message;
 
 		// MAIN POSTING PAGE BEGINS HERE
@@ -1828,7 +1443,7 @@ class guestbook
 		$topic_type_toggle = false;
 
 		$s_topic_icons = false;
-		if (true || $post_data['enable_icons'] && $auth->acl_get('f_icons'))////@todo fix me.
+		if ($post_data['enable_icons'] && $auth->acl_get('u_gb_icons'))
 		{
 			$s_topic_icons = posting_gen_topic_icons($mode, $post_data['icon_id']);
 		}
@@ -1837,8 +1452,6 @@ class guestbook
 		$smilies_checked	= (isset($post_data['enable_smilies'])) ? !$post_data['enable_smilies'] : (($config['allow_smilies']) ? !$user->optionget('smilies') : 1);
 		$urls_checked		= (isset($post_data['enable_urls'])) ? !$post_data['enable_urls'] : 0;
 		$sig_checked		= $post_data['enable_sig'];
-		$lock_topic_checked	= (isset($topic_lock) && $topic_lock) ? $topic_lock : (($post_data['topic_status'] == ITEM_LOCKED) ? 1 : 0);
-		$lock_post_checked	= (isset($post_lock)) ? $post_lock : $post_data['post_edit_locked'];
 
 		// If the user is replying or posting and not already watching this topic but set to always being notified we need to overwrite this setting
 		$notify_set			= ($mode != 'edit' && $config['allow_topic_notify'] && $user->data['is_registered'] && !$post_data['notify_set']) ? $user->data['user_notify'] : $post_data['notify_set'];
@@ -1875,8 +1488,7 @@ class guestbook
 			));
 		}
 
-		$s_hidden_fields = ($mode == 'reply' || $mode == 'quote') ? '<input type="hidden" name="topic_cur_post_id" value="' . $post_data['topic_last_post_id'] . '" />' : '';
-		$s_hidden_fields .= '<input type="hidden" name="lastclick" value="' . $current_time . '" />';
+		$s_hidden_fields = '<input type="hidden" name="lastclick" value="' . $current_time . '" />';
 
 		if ($mode == 'edit')
 		{
@@ -1892,14 +1504,13 @@ class guestbook
 			$s_hidden_fields .= build_hidden_fields($captcha->get_hidden_fields());
 		}
 
-		$form_enctype = (@ini_get('file_uploads') == '0' || strtolower(@ini_get('file_uploads')) == 'off' || !$config['allow_attachments'] || !$auth->acl_get('u_attach') || !$auth->acl_get('f_attach', $forum_id)) ? '' : ' enctype="multipart/form-data"';
 		add_form_key('posting');
 
 
 		// Start assigning vars for main posting page ...
 		$template->assign_vars(array(
 			'L_POST_A'					=> $page_title,
-			'L_ICON'					=> ($mode == 'reply' || $mode == 'quote' || ($mode == 'edit' && $post_id != $post_data['topic_first_post_id'])) ? $user->lang['POST_ICON'] : $user->lang['TOPIC_ICON'],
+			'L_ICON'					=> $user->lang['POST_ICON'],
 			'L_MESSAGE_BODY_EXPLAIN'	=> (intval($config['max_post_chars'])) ? sprintf($user->lang['MESSAGE_BODY_EXPLAIN'], intval($config['max_post_chars'])) : '',
 
 			'TOPIC_TITLE'			=> censor_text($post_data['topic_title']),
@@ -1917,36 +1528,27 @@ class guestbook
 			'ERROR'					=> (sizeof($error)) ? implode('<br />', $error) : '',
 			'TOPIC_TIME_LIMIT'		=> (int) $post_data['topic_time_limit'],
 			'EDIT_REASON'			=> $post_data['post_edit_reason'],
-//			'U_VIEW_FORUM'			=> append_sid("{$phpbb_root_path}viewforum.$phpEx", "f=$forum_id"),
-//			'U_VIEW_TOPIC'			=> ($mode != 'post') ? append_sid("{$phpbb_root_path}viewtopic.$phpEx", "f=$forum_id&amp;t=$topic_id") : '',
-//			'U_PROGRESS_BAR'		=> append_sid("{$phpbb_root_path}posting.$phpEx", "f=$forum_id&amp;mode=popup"),
-//			'UA_PROGRESS_BAR'		=> addslashes(append_sid("{$phpbb_root_path}posting.$phpEx", "f=$forum_id&amp;mode=popup")),
 
 			'S_PRIVMSGS'				=> false,
 			'S_CLOSE_PROGRESS_WINDOW'	=> (isset($_POST['add_file'])) ? true : false,
 			'S_EDIT_POST'				=> ($mode == 'edit') ? true : false,
-			'S_EDIT_REASON'				=> ($mode == 'edit' && $auth->acl_get('m_edit', $forum_id)) ? true : false,
+			'S_EDIT_REASON'				=> false,
 			'S_DISPLAY_USERNAME'		=> (!$user->data['is_registered'] || ($mode == 'edit' && $post_data['poster_id'] == ANONYMOUS)) ? true : false,
 			'S_SHOW_TOPIC_ICONS'		=> $s_topic_icons,
-			'S_DELETE_ALLOWED'			=> ($mode == 'edit' && (($post_id == $post_data['topic_last_post_id'] && $post_data['poster_id'] == $user->data['user_id'] && $auth->acl_get('f_delete', $forum_id) && !$post_data['post_edit_locked'] && ($post_data['post_time'] > time() - ($config['delete_time'] * 60) || !$config['delete_time'])) || $auth->acl_get('m_delete', $forum_id))) ? true : false,
+//			'S_DELETE_ALLOWED'			=> ($mode == 'edit' && (($post_id == $post_data['topic_last_post_id'] && $post_data['poster_id'] == $user->data['user_id'] && $auth->acl_get('f_delete', $forum_id) && !$post_data['post_edit_locked'] && ($post_data['post_time'] > time() - ($config['delete_time'] * 60) || !$config['delete_time'])) || $auth->acl_get('m_delete', $forum_id))) ? true : false,
 			'S_BBCODE_ALLOWED'			=> $bbcode_status,
 			'S_BBCODE_CHECKED'			=> ($bbcode_checked) ? ' checked="checked"' : '',
 			'S_SMILIES_ALLOWED'			=> $smilies_status,
 			'S_SMILIES_CHECKED'			=> ($smilies_checked) ? ' checked="checked"' : '',
-			'S_SIG_ALLOWED'				=> ($auth->acl_get('f_sigs') && $config['allow_sig'] && $user->data['is_registered']) ? true : false,
+			'S_SIG_ALLOWED'				=> ($auth->acl_get('u_gb_sig') && $config['allow_sig'] && $user->data['is_registered']) ? true : false,
 			'S_SIGNATURE_CHECKED'		=> ($sig_checked) ? ' checked="checked"' : '',
 			'S_NOTIFY_ALLOWED'			=> (!$user->data['is_registered'] || ($mode == 'edit' && $user->data['user_id'] != $post_data['poster_id']) || !$config['allow_topic_notify'] || !$config['email_enable']) ? false : true,
 			'S_NOTIFY_CHECKED'			=> ($notify_checked) ? ' checked="checked"' : '',
-			'S_LOCK_TOPIC_ALLOWED'		=> (($mode == 'edit' || $mode == 'reply' || $mode == 'quote') && ($auth->acl_get('m_lock', $forum_id) || ($auth->acl_get('f_user_lock', $forum_id) && $user->data['is_registered'] && !empty($post_data['topic_poster']) && $user->data['user_id'] == $post_data['topic_poster'] && $post_data['topic_status'] == ITEM_UNLOCKED))) ? true : false,
-			'S_LOCK_TOPIC_CHECKED'		=> ($lock_topic_checked) ? ' checked="checked"' : '',
-			'S_LOCK_POST_ALLOWED'		=> ($mode == 'edit' && $auth->acl_get('m_edit', $forum_id)) ? true : false,
-			'S_LOCK_POST_CHECKED'		=> ($lock_post_checked) ? ' checked="checked"' : '',
 			'S_LINKS_ALLOWED'			=> $url_status,
 			'S_MAGIC_URL_CHECKED'		=> ($urls_checked) ? ' checked="checked"' : '',
-			'S_TYPE_TOGGLE'				=> $topic_type_toggle,
-			'S_SAVE_ALLOWED'			=> ($auth->acl_get('u_savedrafts') && $user->data['is_registered'] && $mode != 'edit') ? true : false,
-			'S_HAS_DRAFTS'				=> ($auth->acl_get('u_savedrafts') && $user->data['is_registered'] && $post_data['drafts']) ? true : false,
-			'S_FORM_ENCTYPE'			=> $form_enctype,
+			'S_TYPE_TOGGLE'				=> '',
+			'S_SAVE_ALLOWED'			=> false, // Profile Guestbook does not support drafts.
+			'S_HAS_DRAFTS'				=> false,
 
 			'S_BBCODE_IMG'			=> $img_status,
 			'S_BBCODE_URL'			=> $url_status,
@@ -1975,6 +1577,11 @@ class guestbook
 			}
 		}
 
+	}
+	
+	public function getmember()
+	{
+		return $this->member;
 	}
 }
 ?>
