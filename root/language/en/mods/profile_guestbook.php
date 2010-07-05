@@ -59,5 +59,6 @@ $lang = array_merge($lang, array(
 	'ABOUT_GUESTBOOK'	=> 'Welcome in this guestbook. You can write here your personal thoughts. Have fun posting!',
 	
 	'NO_TOPIC_ICON'		=> 'No icon',
+	'RETURN_PROFILE'	=> '%sReturn back to the profile',
 ));
 ?>

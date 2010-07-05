@@ -16,11 +16,56 @@ if (!defined('IN_PHPBB'))
 	exit;
 }
 
+function gb_delete_post($post_id, &$data, &$guestbook)
+{
+	global $db;
+	$sql = 'DELETE FROM ' . GUESTBOOK_TABLE . ' WHERE post_id = ' . (int)$post_id;
+	$db->sql_query($sql);
+	
+	$member = $guestbook->getmember();
+	
+	// I don't use $db->sql_build_array as it doesnt support field = field - X.
+	if ($member['user_guestbook_posts'] == 1)
+	{
+		// User has no longer any posts in guestbook.
+		$sql = 'UPDATE ' . USERS_TABLE . ' SET 
+				user_guestbook_posts = 0, 
+				user_guestbook_first_post_id = 0, 
+				user_guestbook_last_post_id = 0
+			 WHERE user_id = ' . $member['user_id'];
+	}
+	else if ($member['user_guestbook_first_post_id'] == $post_id)
+	{
+		// New first post
+		$sql = 'SELECT post_id FROM ' . GUESTBOOK_TABLE . ' WHERE user_id = ' . $member['user_id'] . ' ORDER BY post_time ASC';
+		$result = $db->sql_query_limit($sql, 1);
+		$post_id2 = (int)$db->sql_fetchfield('post_id');
+		$db->sql_freeresult($result);
+		
+		$sql = 'UPDATE ' . USERS_TABLE . ' SET user_guestbook_posts = user_guestbook_posts -1, user_guestbook_first_post_id = ' . $post_id2 . ' WHERE user_id = ' . $member['user_id'];
+	}
+	else if ($member['user_guestbook_last_post_id'] == $post_id)
+	{
+		// New last post
+		$sql = 'SELECT post_id FROM ' . GUESTBOOK_TABLE . ' WHERE user_id = ' . $member['user_id'] . ' ORDER BY post_time DESC';
+		$result = $db->sql_query_limit($sql, 1);
+		$post_id2 = (int)$db->sql_fetchfield('post_id');
+		$db->sql_freeresult($result);		
+		
+		$sql = 'UPDATE ' . USERS_TABLE . ' SET user_guestbook_posts = user_guestbook_posts -1, user_guestbook_last_post_id = ' . $post_id2 . ' WHERE user_id = ' . $member['user_id'];		
+	}
+	else
+	{
+		// Enough posts in guestbook, don't need to update last post, just decrement counters.
+		$sql = 'UPDATE ' . USERS_TABLE . ' SET user_guestbook_posts = user_guestbook_posts -1 WHERE user_id = ' . $member['user_id'];
+	}
+	$db->sql_query($sql);
+}
 
 /**
 * Do the various checks required for removing posts as well as removing it
 */
-function handle_gb_post_delete($post_id, &$post_data)
+function handle_gb_post_delete($post_id, &$post_data, &$guestbook)
 {
 	global $user, $db, $auth, $config;
 	global $phpbb_root_path, $phpEx;
@@ -40,16 +85,19 @@ function handle_gb_post_delete($post_id, &$post_data)
 				'poster_id'				=> $post_data['poster_id'],
 			);
 
-			$next_post_id = gb_delete_post($forum_id, $topic_id, $post_id, $data);
+			$next_post_id = gb_delete_post($post_id, $data, $guestbook);
 			$post_username = ($post_data['poster_id'] == ANONYMOUS && !empty($post_data['post_username'])) ? $post_data['post_username'] : $post_data['username'];
 
-			add_log('mod', $forum_id, $topic_id, 'LOG_GB_DELETE_POST', $post_data['post_subject'], $post_username);
+//			add_log('mod', $forum_id, $topic_id, 'LOG_GB_DELETE_POST', $post_data['post_subject'], $post_username);
 
-			$meta_info = append_sid("{$phpbb_root_path}viewtopic.$phpEx", "f=$forum_id&amp;t=$topic_id&amp;p=$next_post_id") . "#p$next_post_id";
-			$message = $user->lang['POST_DELETED'] . '<br /><br />' . sprintf($user->lang['RETURN_TOPIC'], '<a href="' . $meta_info . '">', '</a>');
+			$member = $guestbook->getmember();
+
+			$meta_info = append_sid("{$phpbb_root_path}memberlist.$phpEx", "mode=viewprofile&amp;u=" . $member['user_id']);
+			unset($member);
+			$message = $user->lang['POST_DELETED'] . '<br /><br />' . sprintf($user->lang['RETURN_PROFILE'], '<a href="' . $meta_info . '">', '</a>');
 
 			meta_refresh(3, $meta_info);
-			$message .= '<br /><br />' . sprintf($user->lang['RETURN_FORUM'], '<a href="' . append_sid("{$phpbb_root_path}viewforum.$phpEx", 'f=' . $forum_id) . '">', '</a>');
+
 			trigger_error($message);
 		}
 		else
@@ -66,7 +114,6 @@ function handle_gb_post_delete($post_id, &$post_data)
 
 	trigger_error('USER_CANNOT_DELETE');
 }
-
 
 /**
 * Submit Post

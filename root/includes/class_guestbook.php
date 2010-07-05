@@ -1079,7 +1079,7 @@ class guestbook
 		// Handle delete mode...
 		if ($mode == 'delete')
 		{
-			handle_gb_post_delete($post_id, $post_data);
+			handle_gb_post_delete($post_id, $post_data, $this);
 			return;
 		}
 
