@@ -40,15 +40,12 @@ class guestbook
 		{
 			return;
 		}
-		else if($this->user_id == ANONYMOUS)
-		{
-			return;
-		}
+		
 		$this->enabled = true;
 		
 		$this->mode = request_var('gbmode', 'display');
 		
-		if ($member)
+		if ($member && is_array($member))
 		{
 			$this->user_id	= (int)$member['user_id'];		
 			$this->member	= $member;
@@ -81,6 +78,7 @@ class guestbook
 			case 'edit':
 			case 'delete':
 			case 'post':
+			case 'quote':
 				$this->post();
 			break;
 		}
@@ -139,9 +137,8 @@ class guestbook
 
 
 		$template->assign_vars(array(
-			'POST_IMG' 			=> (true) ? $user->img('button_topic_locked', 'FORUM_LOCKED') : $user->img('button_topic_new', 'POST_NEW_TOPIC'), //@TODO, correct button
 			'QUOTE_IMG' 			=> $user->img('icon_post_quote', 'REPLY_WITH_QUOTE'),
-			'REPLY_IMG'			=> (true) ? $user->img('button_topic_locked', 'TOPIC_LOCKED') : $user->img('button_topic_reply', 'REPLY_TO_TOPIC'),// @TODO, correct button
+			'REPLY_IMG'			=> $user->img('button_topic_reply', 'REPLY_TO_GUESTBOOK'),
 			'EDIT_IMG' 			=> $user->img('icon_post_edit', 'EDIT_POST'),
 			'DELETE_IMG' 			=> $user->img('icon_post_delete', 'DELETE_POST'),
 			'INFO_IMG' 			=> $user->img('icon_post_info', 'VIEW_INFO'),
@@ -160,14 +157,53 @@ class guestbook
 			'UNAPPROVED_IMG'		=> $user->img('icon_topic_unapproved', 'POST_UNAPPROVED'),
 			'WARN_IMG'			=> $user->img('icon_user_warn', 'WARN_USER'),
 
-			'S_IS_LOCKED'			=> (true) ? false : true, // @TODO, value correct
+			'S_IS_LOCKED'			=> false,
 			'S_GUESTBOOK_ACTION' 		=> append_sid("{$phpbb_root_path}memberlist.$phpEx", "u={$this->user_id}&amp;gbmode=display&amp;mode=viewprofile"),
 
 			'S_DISPLAY_POST_INFO'	=> true, //@TODO perm
-			'S_DISPLAY_REPLY_INFO'	=> true, //@TODO perm
+			'S_DISPLAY_REPLY_INFO'	=> ($auth->acl_get('u_gb_post')) ? true : false,
 			
-			'U_POST_REPLY_TOPIC' 	=> ($auth->acl_get('u_gb_post') || $user->data['user_id'] == ANONYMOUS) ? append_sid("{$phpbb_root_path}memberlist.$phpEx", "u={$this->user_id}&amp;gbmode=post&amp;mode=viewprofile") : '', 
+			'U_POST_REPLY_TOPIC' 	=> ($auth->acl_get('u_gb_post')) ? append_sid("{$phpbb_root_path}memberlist.$phpEx", "u={$this->user_id}&amp;gbmode=post&amp;mode=viewprofile") : '', 
 		));
+		
+		// let's set up quick_reply
+		// We cant have this at the same place as within viewtopic, as we return if there are no posts.
+		$s_quick_reply = false;
+		if ($user->data['is_registered'] && $config['allow_quick_reply'] && $auth->acl_get('u_gb_post'))
+		{
+			// Quick reply enabled forum
+
+			$s_quick_reply = true;
+		}
+
+		if ($s_quick_reply)
+		{
+			add_form_key('posting');
+
+			$s_attach_sig	= $config['allow_sig'] && $user->optionget('attachsig') && $auth->acl_get('f_sigs') && $auth->acl_get('u_gb_sig');
+			$s_smilies		= $config['allow_smilies'] && $user->optionget('smilies') && $auth->acl_get('u_gb_smilies');
+			$s_bbcode		= $config['allow_bbcode'] && $user->optionget('bbcode') && $auth->acl_get('u_gb_bbcode');
+			$s_notify		= $config['allow_topic_notify'] && ($user->data['user_notify'] );
+
+			$qr_hidden_fields = array(
+				'lastclick'				=> (int) time(),
+			);
+
+			// Originally we use checkboxes and check with isset(), so we only provide them if they would be checked
+			(!$s_bbcode)					? $qr_hidden_fields['disable_bbcode'] = 1		: true;
+			(!$s_smilies)					? $qr_hidden_fields['disable_smilies'] = 1		: true;
+			(!$config['allow_post_links'])	? $qr_hidden_fields['disable_magic_url'] = 1	: true;
+			($s_attach_sig)					? $qr_hidden_fields['attach_sig'] = 1			: true;
+			($s_notify)						? $qr_hidden_fields['notify'] = 1				: true;
+
+			$template->assign_vars(array(
+				'S_QUICK_REPLY'			=> true,
+					'U_QR_ACTION'			=> append_sid("{$phpbb_root_path}memberlist.$phpEx", "mode=viewprofile&amp;u={$this->user_id}&amp;gbmode=post"),
+				'QR_HIDDEN_FIELDS'		=> build_hidden_fields($qr_hidden_fields),
+				'SUBJECT'				=> '',
+			));
+		}
+		// now I have the urge to wash my hands :(		
 
 		// This rather complex gaggle of code handles querying for topics but
 		// also allows for direct linking to a post (and the calculation of which
@@ -195,7 +231,7 @@ class guestbook
 			// If post_id was submitted, we try at least to display the normal profile as a last resort...
 			if ($post_id)
 			{
-				redirect(append_sid("{$phpbb_root_path}memberlist.$phpEx", "u={$this->user_id}&amp;mode=viewprofile&amp;gbmode=display"));
+				redirect(append_sid("{$phpbb_root_path}memberlist.$phpEx", "u={$this->user_id}&amp;mode=viewprofile"));
 			}
 			
 			$total_posts = 0;
@@ -415,7 +451,6 @@ class guestbook
 			}
 		}
 
-		// Holding maximum post time for marking topic read
 		// We need to grab it because we do reverse ordering sometimes
 		$max_post_time = 0;
 
@@ -442,7 +477,7 @@ class guestbook
 
 		$now = getdate(time() + $user->timezone + $user->dst - date('Z'));
 
-		// Posts are stored in the $rowset array while $attach_list, $user_cache
+		// Posts are stored in the $rowset array while $user_cache
 		// and the global bbcode_bitfield are built
 		while ($row = $db->sql_fetchrow($result))
 		{
@@ -459,7 +494,7 @@ class guestbook
 
 				'post_id'			=> $row['post_id'],
 				'post_time'			=> $row['post_time'],
-				'user_id'			=> $row['user_id'],
+				'user_id'			=> $row['poster_id'],
 				'username'			=> $row['username'],
 				'user_colour'		=> $row['user_colour'],
 
@@ -675,6 +710,10 @@ class guestbook
 		// Instantiate BBCode if need be
 		if ($bbcode_bitfield !== '')
 		{
+			if (!class_exists('bbcode'))
+			{
+				include("{$phpbb_root_path}includes/bbcode.$phpEx");
+			}
 			$bbcode = new bbcode(base64_encode($bbcode_bitfield));
 		}
 
@@ -792,7 +831,7 @@ class guestbook
 
 				'U_PROFILE'		=> $user_cache[$poster_id]['profile'],
 				'U_SEARCH'		=> $user_cache[$poster_id]['search'],
-				'U_PM'			=> ($poster_id != ANONYMOUS && $config['allow_privmsg'] && $auth->acl_get('u_sendpm') && ($user_cache[$poster_id]['allow_pm'] || $auth->acl_gets('a_', 'm_') || $auth->acl_getf_global('m_'))) ? append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=pm&amp;mode=compose&amp;action=quotepost&amp;p=' . $row['post_id']) : '',
+				'U_PM'			=> ($poster_id != ANONYMOUS && $config['allow_privmsg'] && $auth->acl_get('u_sendpm') && ($user_cache[$poster_id]['allow_pm'] || $auth->acl_gets('a_', 'm_') || $auth->acl_getf_global('m_'))) ? append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=pm&amp;mode=compose&amp;u=' . $poster_id) : '',
 				'U_EMAIL'		=> $user_cache[$poster_id]['email'],
 				'U_WWW'			=> $user_cache[$poster_id]['www'],
 				'U_ICQ'			=> $user_cache[$poster_id]['icq'],
@@ -805,7 +844,7 @@ class guestbook
 				'U_NEXT_POST_ID'	=> ($i < $i_total && isset($rowset[$post_list[$i + 1]])) ? $rowset[$post_list[$i + 1]]['post_id'] : '',
 				'U_PREV_POST_ID'	=> $prev_post_id,
 				'U_NOTES'			=> ($auth->acl_getf_global('m_')) ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=notes&amp;mode=user_notes&amp;u=' . $poster_id, true, $user->session_id) : '',
-				'U_WARN'			=> ($auth->acl_get('m_warn') && $poster_id != $user->data['user_id'] && $poster_id != ANONYMOUS) ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=warn&amp;mode=warn_post&amp;f=' . $forum_id . '&amp;p=' . $row['post_id'], true, $user->session_id) : '',
+				'U_WARN'			=> ($auth->acl_get('m_warn') && $poster_id != $user->data['user_id'] && $poster_id != ANONYMOUS) ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=warn&amp;mode=warn_post', true, $user->session_id) : '',
 
 				'POST_ID'			=> $row['post_id'],
 				'POSTER_ID'			=> $poster_id,
@@ -839,46 +878,6 @@ class guestbook
 			unset($rowset[$post_list[$i]]);
 		}
 		unset($rowset, $user_cache);
-
-
-
-		// let's set up quick_reply
-		$s_quick_reply = false;
-		if ($user->data['is_registered'] && $config['allow_quick_reply'] && $auth->acl_get('u_gb_post'))
-		{
-			// Quick reply enabled forum
-
-			$s_quick_reply = true;
-		}
-
-		if ($s_quick_reply)
-		{
-			add_form_key('posting');
-
-			$s_attach_sig	= $config['allow_sig'] && $user->optionget('attachsig') && $auth->acl_get('f_sigs') && $auth->acl_get('u_gb_sig');
-			$s_smilies		= $config['allow_smilies'] && $user->optionget('smilies') && $auth->acl_get('u_gb_smilies');
-			$s_bbcode		= $config['allow_bbcode'] && $user->optionget('bbcode') && $auth->acl_get('u_gb_bbcode');
-			$s_notify		= $config['allow_topic_notify'] && ($user->data['user_notify'] );
-
-			$qr_hidden_fields = array(
-				'lastclick'				=> (int) time(),
-			);
-
-			// Originally we use checkboxes and check with isset(), so we only provide them if they would be checked
-			(!$s_bbcode)					? $qr_hidden_fields['disable_bbcode'] = 1		: true;
-			(!$s_smilies)					? $qr_hidden_fields['disable_smilies'] = 1		: true;
-			(!$config['allow_post_links'])	? $qr_hidden_fields['disable_magic_url'] = 1	: true;
-			($s_attach_sig)					? $qr_hidden_fields['attach_sig'] = 1			: true;
-			($s_notify)						? $qr_hidden_fields['notify'] = 1				: true;
-
-			$template->assign_vars(array(
-				'S_QUICK_REPLY'			=> true,
-					'U_QR_ACTION'			=> append_sid("{$phpbb_root_path}memberlist.$phpEx", "mode=viewprofile&amp;u={$this->user_id}&amp;gbmode=post"),
-				'QR_HIDDEN_FIELDS'		=> build_hidden_fields($qr_hidden_fields),
-				'SUBJECT'				=> '',
-			));
-		}
-		// now I have the urge to wash my hands :(
 	}
 	
 	private function post()
@@ -942,7 +941,7 @@ class guestbook
 
 			case 'smilies':
 				$sql = '';
-				generate_smilies('window', $forum_id);
+				generate_smilies('window');
 			break;
 
 			case 'popup':
@@ -993,7 +992,7 @@ class guestbook
 		}
 
 		// Is the user able to read within this forum?
-		if (false && !$auth->acl_get('u_gb_view', $forum_id))
+		if (!$auth->acl_get('u_gb_view'))
 		{
 			if ($user->data['user_id'] != ANONYMOUS)
 			{
@@ -1368,7 +1367,7 @@ class guestbook
 			$preview_signature_bitfield = ($mode == 'edit') ? $post_data['user_sig_bbcode_bitfield'] : $user->data['user_sig_bbcode_bitfield'];
 
 			// Signature
-			if ($post_data['enable_sig'] && $config['allow_sig'] && $preview_signature && $auth->acl_get('u_gb_sig', $forum_id))
+			if ($post_data['enable_sig'] && $config['allow_sig'] && $preview_signature && $auth->acl_get('u_gb_sig'))
 			{
 				$parse_sig = new parse_message($preview_signature);
 				$parse_sig->bbcode_uid = $preview_signature_uid;
@@ -1569,16 +1568,6 @@ class guestbook
 		);
 
 		make_jumpbox(append_sid("{$phpbb_root_path}viewforum.$phpEx"));
-
-		// Topic review
-		if ($mode == 'reply' || $mode == 'quote')
-		{
-			if (topic_review($topic_id, $forum_id))
-			{
-				$template->assign_var('S_DISPLAY_REVIEW', true);
-			}
-		}
-
 	}
 	
 	public function getmember()
