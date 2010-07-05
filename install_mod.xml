@@ -8,7 +8,11 @@
 		<license><![CDATA[http://opensource.org/licenses/gpl-license.php GNU General Public License v2]]></license>
 		<title lang="en"><![CDATA[Profile Guestbook]]></title>
 		<description lang="en"><![CDATA[This MOD adds a guestbook to every users profile]]></description>
-		<author-notes lang="en"><![CDATA[This MOD _REQUIRES_ php5. Without php5 this MOD will NOT work!]]></author-notes>
+		<author-notes lang="en"><![CDATA[This MOD _REQUIRES_ php5. Without php5 this MOD will NOT work!
+		Support will only be provided at http://phpbbguestbook.com/index.php. No support will be provided at phpBB.com or any other site.
+		
+		Please report bugs or request features in the correct tracker at http://phpbbguestbook.com/tracker.php
+		]]></author-notes>
 		<author-group>
 			<author>
 				<realname><![CDATA[Paul Sohier]]></realname>
