@@ -69,7 +69,7 @@ $options = array(
 * The version numbering must otherwise be compatible with the version_compare function - http://php.net/manual/en/function.version-compare.php
 */
 $versions = array(
-	'0.0.1' => array(
+	'0.0.1-dev1' => array(
 		'config_add'	=> array(
 			array('profile_guestbook_enabled', 1),
 			
@@ -201,6 +201,7 @@ $versions = array(
 			),
 		),
 	),
+	'0.0.1-dev2'	=> array(),
 );
 
 // Include the UMIF Auto file and everything else will be handled automatically.
