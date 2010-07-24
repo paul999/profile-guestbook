@@ -51,7 +51,7 @@ function hook_profile_guestbook(&$hook)
  * Only register this hook if the profile guestbook MOD is enabled, and the mode is viewprofile (page is checked later,
  * as some more code is needed for that.
  */
-if (request_var('mode', '') == 'viewprofile' && $config['guestbook_enabled'])
+if (request_var('mode', '') == 'viewprofile' && $config['profile_guestbook_enabled'])
 {
 	/**
 	 * Codes based from includes/sessions.php

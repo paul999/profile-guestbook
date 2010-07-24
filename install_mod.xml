@@ -24,7 +24,7 @@
 				</contributions-group>
 			</author>
 		</author-group>
-		<mod-version>0.0.1</mod-version>
+		<mod-version>0.0.2</mod-version>
 		<installation>
 			<level>easy</level>
 			<time>60</time>
@@ -36,6 +36,14 @@
 				<rev-version>0.0.1</rev-version>
 				<changelog lang="en">
 					<change><![CDATA[First release]]></change>
+				</changelog>
+			</entry>
+			<entry>
+				<date>2010-xx-xx</date>
+				<rev-version>0.0.2</rev-version>
+				<changelog lang="en">
+					<change>Bug #3:  Wrong config item used in hook to enable the guestbook</change>
+					
 				</changelog>
 			</entry>
 		</history>
