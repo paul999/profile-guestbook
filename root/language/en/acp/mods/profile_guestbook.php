@@ -40,6 +40,11 @@ $lang = array_merge($lang, array(
 	'ACP_PROFILE_GUESTBOOK_SETTINGS_EXPLAIN'	=> 'General settings for the profile guestbook MOD',
 	
 	'PROFILE_GUESTBOOK_ENABLED'	=> 'Profile Guestbook MOD enabled',
+	
+	'VERSION_UP_TO_DATE'		=> 'Your version is uptodate.',
+	'VERSION_NOT_UP_TO_DATE_TITLE'	=> 'Your version is not uptodate. You should update as soon as possible.',
+	'VERSIONCHECK_FAIL'		=> 'Error connecting to the server.',
+	
 
 ));
 
