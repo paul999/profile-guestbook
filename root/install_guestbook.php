@@ -207,6 +207,12 @@ $versions = array(
 	'0.0.2-dev2'	=> array(),
 	'0.0.2'		=> array(),
 	'0.0.3-dev1'	=> array(),
+	'0.1.0-dev1'	=> array(
+		'permission_add' => array(
+			array('a_gb', 1),
+			array('a_gb_settings', 1),
+		),	
+	),
 );
 
 // Include the UMIF Auto file and everything else will be handled automatically.
