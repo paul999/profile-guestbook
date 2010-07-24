@@ -88,7 +88,7 @@ function handle_gb_post_delete($post_id, &$post_data, &$guestbook)
 			$next_post_id = gb_delete_post($post_id, $data, $guestbook);
 			$post_username = ($post_data['poster_id'] == ANONYMOUS && !empty($post_data['post_username'])) ? $post_data['post_username'] : $post_data['username'];
 
-//			add_log('mod', $forum_id, $topic_id, 'LOG_GB_DELETE_POST', $post_data['post_subject'], $post_username);
+			add_log('mod', 0, 0, 'LOG_GB_DELETE_POST', $post_username);
 
 			$member = $guestbook->getmember();
 
