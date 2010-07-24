@@ -207,6 +207,31 @@ $versions = array(
 	'0.0.2-dev2'	=> array(),
 	'0.0.2'		=> array(),
 	'0.0.3-dev1'	=> array(),
+	'0.1.0-dev1'	=> array(
+		'permission_add' => array(
+			array('a_gb', 1),
+			array('a_gb_settings', 1),
+		),	
+		'module_add' => array(
+			array('acp', 'ACP_CAT_DOT_MODS', 'ACP_CAT_PROFILE_GUESTBOOK'),
+			
+			array('acp', 'ACP_CAT_PROFILE_GUESTBOOK', array(
+					'module_basename'		=> 'profile_guestbook',
+					'module_langname'		=> 'ACP_PROFILE_GUESTBOOK',
+					'module_mode'			=> 'overview',
+					'module_auth'			=> 'acl_a_gb',
+				),
+			),
+			array('acp', 'ACP_CAT_PROFILE_GUESTBOOK', array(
+					'module_basename'		=> 'profile_guestbook',
+					'module_langname'		=> 'ACP_PROFILE_GUESTBOOK_SETTINGS',
+					'module_mode'			=> 'settings',
+					'module_auth'			=> 'acl_a_gb_settings',
+				),
+							
+			),
+		),		
+	),
 );
 
 // Include the UMIF Auto file and everything else will be handled automatically.
