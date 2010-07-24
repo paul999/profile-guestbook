@@ -10,12 +10,17 @@
 	<!-- IF S_VERSIONCHECK_FAIL -->
 		<div class="errorbox notice">
 			<p>{L_VERSIONCHECK_FAIL}</p>
-			<p><a href="{U_VERSIONCHECK_FORCE}">{L_VERSIONCHECK_FORCE_UPDATE}</a> &middot; <a href="{U_VERSIONCHECK}">{L_MORE_INFORMATION}</a></p>
+			<p><a href="{U_VERSIONCHECK_FORCE}">{L_VERSIONCHECK_FORCE_UPDATE}</a></p>
 		</div>
 	<!-- ELSEIF not S_VERSION_UP_TO_DATE -->
 		<div class="errorbox">
 			<p>{L_VERSION_NOT_UP_TO_DATE_TITLE}</p>
-			<p><a href="{U_VERSIONCHECK_FORCE}">{L_VERSIONCHECK_FORCE_UPDATE}</a> &middot; <a href="{U_VERSIONCHECK}">{L_MORE_INFORMATION}</a></p>
+			<p><a href="{U_VERSIONCHECK_FORCE}">{L_VERSIONCHECK_FORCE_UPDATE}</a></p>
+		</div>
+	<!-- ELSE -->
+		<div class="successbox">
+			<p>{L_VERSION_UP_TO_DATE}</p>
+			<p><a href="{U_VERSIONCHECK_FORCE}">{L_VERSIONCHECK_FORCE_UPDATE}</a></p>
 		</div>
 	<!-- ENDIF -->
 

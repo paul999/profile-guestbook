@@ -61,7 +61,28 @@ class acp_profile_guestbook
 			
 			case 'overview':
 				$this->tpl_name = 'acp_profile_guestbook';
-				$this->page_title = 'ACP_PROFILE_GUESTBOOK';			
+				$this->page_title = 'ACP_PROFILE_GUESTBOOK';		
+				
+				$latest_version_info = false;
+				if (($latest_version_info = $this->obtain_latest_version_info(request_var('versioncheck_force', false))) === false)
+				{
+					$template->assign_var('S_VERSIONCHECK_FAIL', true);
+				}
+				else
+				{
+					$latest_version_info = explode("\n", $latest_version_info);
+
+					$latest_version = str_replace('rc', 'RC', strtolower(trim($latest_version_info[0])));
+					$current_version = str_replace('rc', 'RC', strtolower($config['version']));
+
+					$template->assign_vars(array(
+						'S_VERSION_UP_TO_DATE'	=> version_compare($current_version, $latest_version, '<') ? false : true,
+					));
+				}	
+				
+				$template->assign_vars(array(
+					'U_VERSIONCHECK_FORCE'	=> $this->u_action . '&amp;versioncheck_force=1',				
+				));				
 				return;
 			break;
 
@@ -177,6 +198,45 @@ class acp_profile_guestbook
 			unset($display_vars['vars'][$config_key]);
 		}
 	}
+	
+	/**
+	 * Obtains the latest version information
+	 *
+	 * @param bool $force_update Ignores cached data. Defaults to false.
+	 * @param bool $warn_fail Trigger a warning if obtaining the latest version information fails. Defaults to false.
+	 * @param int $ttl Cache version information for $ttl seconds. Defaults to 86400 (24 hours).
+	 *
+	 * @return string | false Version info on success, false on failure.
+	 */
+	private function obtain_latest_version_info($force_update = false, $warn_fail = false, $ttl = 86400)
+	{
+		global $cache;
+
+		$info = $cache->get('pg_versioncheck');
+
+		if ($info === false || $force_update)
+		{
+			$errstr = '';
+			$errno = 0;
+
+			$info = get_remote_file('www.phpbbguestbook.com', '/updatecheck', 'norm.txt', $errstr, $errno);
+
+			if ($info === false)
+			{
+				$cache->destroy('versioncheck');
+				if ($warn_fail)
+				{
+					trigger_error($errstr, E_USER_WARNING);
+				}
+				return false;
+			}
+
+			$cache->put('pg_versioncheck', $info, $ttl);
+		}
+
+		return $info;
+	}
+	
 }
 
 ?>
