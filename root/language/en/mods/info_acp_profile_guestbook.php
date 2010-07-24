@@ -39,6 +39,8 @@ $lang = array_merge($lang, array(
 	'ACP_CAT_PROFILE_GUESTBOOK'	=> 'Profile Guestbook',
 	'ACP_PROFILE_GUESTBOOK'		=> 'Profile Guestbook',
 	'ACP_PROFILE_GUESTBOOK_SETTINGS'=> 'Profile Guestbook Settings',
+	
+	'LOG_CONFIG_PROFILE_GUESTBOOK'	=> '<strong>Altered Profile Guestbook settings</strong>',
 ));
 
 
