@@ -56,7 +56,7 @@ $lang = array_merge($lang, array(
 	'NUMBER_OF_GB'		=> 'Number of users with a guestbook',
 	'NUMBER_OF_POSTS'	=> 'Number of guestbook posts',
 
-	
+	'CONFIRM_GB_DELETE_ALL'	=> 'Are you sure you want to remove <em>all</em> guestbook posts from all users? <br />This cannot be undone!',
 
 ));
 

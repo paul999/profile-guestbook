@@ -63,6 +63,69 @@ class acp_profile_guestbook
 				$this->tpl_name = 'acp_profile_guestbook';
 				$this->page_title = 'ACP_PROFILE_GUESTBOOK';		
 				
+				$action = request_var('action', '');
+
+				if ($action)
+				{
+					
+					if (!confirm_box(true))
+					{
+						switch ($action)
+						{
+							case 'delete_all':
+								$confirm = true;
+								$confirm_lang = 'CONFIRM_GB_DELETE_ALL';
+							break;
+							default:
+								$confirm = true;
+								$confirm_lang = 'CONFIRM_OPERATION';
+						}
+
+						if ($confirm)
+						{
+							confirm_box(false, $user->lang[$confirm_lang], build_hidden_fields(array(
+								'i'		=> $id,
+								'mode'		=> $mode,
+								'action'	=> $action,
+							)));
+						}
+					}
+					else
+					{
+						switch ($action)
+						{
+							case 'delete_all':
+								/**
+								* @todo, fix all other tables with relations!
+								* @todo, permissions
+								**/
+								
+								/**
+								 * Truncate cant be used for sqlite/firebird.
+								 * Code from acp_main.php
+								 **/
+								switch ($db->sql_layer)
+								{
+									case 'sqlite':
+									case 'firebird':
+										$db->sql_query("DELETE FROM $table");
+									break;
+
+									default:
+										$db->sql_query("TRUNCATE TABLE $table");
+									break;
+								}
+								
+								add_log('admin', 'LOG_GB_DELETE_ALL_POSTS');
+							break;
+						
+							default:
+								trigger_error('NO_MODE');
+						}
+					}
+				}
+				
+				
 				$latest_version_info = false;
 				if (($latest_version_info = $this->obtain_latest_version_info(request_var('versioncheck_force', false))) === false)
 				{
