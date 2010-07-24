@@ -39,10 +39,10 @@
 				</changelog>
 			</entry>
 			<entry>
-				<date>2010-xx-xx</date>
+				<date>2010-07-24</date>
 				<rev-version>0.0.2</rev-version>
 				<changelog lang="en">
-					<change>Bug #2: The LOG GB DELETE POST is missing from the MCP</change>
+					<change>Bug #2: The LOG_GB_DELETE_POST language item is missing from the MCP</change>
 					<change>Bug #3: Wrong config item used in hook to enable the guestbook</change>
 					
 				</changelog>
