@@ -206,6 +206,7 @@ $versions = array(
 	'0.0.2-dev1'	=> array(),
 	'0.0.2-dev2'	=> array(),
 	'0.0.2'		=> array(),
+	'0.0.3-dev1'	=> array(),
 );
 
 // Include the UMIF Auto file and everything else will be handled automatically.
