@@ -16,7 +16,7 @@ class acp_profile_guestbook_info
 	function module()
 	{
 		return array(
-			'filename'	=> 'acp_board',
+			'filename'	=> 'acp_profile_guestbook',
 			'title'		=> 'ACP_PROFILE_GUESTBOOK',
 			'version'	=> '1.0.0',
 			'modes'		=> array(
