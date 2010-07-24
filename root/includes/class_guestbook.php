@@ -198,7 +198,7 @@ class guestbook
 
 			$template->assign_vars(array(
 				'S_QUICK_REPLY'			=> true,
-					'U_QR_ACTION'			=> append_sid("{$phpbb_root_path}memberlist.$phpEx", "mode=viewprofile&amp;u={$this->user_id}&amp;gbmode=post"),
+				'U_QR_ACTION'			=> append_sid("{$phpbb_root_path}memberlist.$phpEx", "mode=viewprofile&amp;u={$this->user_id}&amp;gbmode=post"),
 				'QR_HIDDEN_FIELDS'		=> build_hidden_fields($qr_hidden_fields),
 				'SUBJECT'				=> '',
 			));

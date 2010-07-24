@@ -60,14 +60,6 @@
 
 			<div class="content">{postrow.MESSAGE}</div>
 
-			<!-- IF postrow.S_HAS_ATTACHMENTS -->
-				<dl class="attachbox">
-					<dt>{L_ATTACHMENTS}</dt>
-					<!-- BEGIN attachment -->
-						<dd>{postrow.attachment.DISPLAY_ATTACHMENT}</dd>
-					<!-- END attachment -->
-				</dl>
-			<!-- ENDIF -->
 
 			<!-- IF postrow.S_DISPLAY_NOTICE --><div class="rules">{L_DOWNLOAD_NOTICE}</div><!-- ENDIF -->
 			<!-- IF postrow.EDITED_MESSAGE or postrow.EDIT_REASON -->
@@ -76,7 +68,6 @@
 				</div>
 			<!-- ENDIF -->
 
-			<!-- IF postrow.BUMPED_MESSAGE --><div class="notice"><br /><br />{postrow.BUMPED_MESSAGE}</div><!-- ENDIF -->
 			<!-- IF postrow.SIGNATURE --><div id="sig{postrow.POST_ID}" class="signature">{postrow.SIGNATURE}</div><!-- ENDIF -->
 		<!-- ENDIF -->
 
@@ -143,7 +134,7 @@
 </div>
 	
 <!-- END postrow -->
-<!-- IF S_DISPLAY_REPLY_INFO and not S_IS_LOCKED -->
+<!-- IF S_DISPLAY_REPLY_INFO and not S_IS_LOCKED and S_QUICK_REPLY -->
 	<!-- INCLUDE quickreply_editor.html -->
 <!-- ENDIF -->
 <!-- IF S_NUM_POSTS > 1 or PREVIOUS_PAGE -->
