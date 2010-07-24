@@ -81,7 +81,8 @@ class acp_profile_guestbook
 				}	
 				
 				$template->assign_vars(array(
-					'U_VERSIONCHECK_FORCE'	=> $this->u_action . '&amp;versioncheck_force=1',				
+					'U_VERSIONCHECK_FORCE'	=> $this->u_action . '&amp;versioncheck_force=1',		
+					'S_ACTION_OPTIONS'	=> $auth->acl_get('a_gb_settings') ? true : false, // @TODO: Decided i we want this permission		
 				));				
 				return;
 			break;
