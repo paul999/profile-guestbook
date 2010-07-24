@@ -47,11 +47,14 @@ $lang = array_merge($lang, array(
 	'GUESTBOOK_STATS'	=> 'Basic guestbook statistics',
 	
 	'GB_OPTIONS'		=> 'Basic guestbook actions',
-	'DELETE_ALL'		=> 'Delete <strong>all</strong posts from <ul>all</ul> users.',
+	'DELETE_ALL'		=> 'Delete <em>all</em> posts from <em>all</em> users.',
 
 	'VERSION_UP_TO_DATE'		=> 'Your version is uptodate.',
 	'VERSION_NOT_UP_TO_DATE_TITLE'	=> 'Your version is not uptodate. You should update as soon as possible.',
 	'VERSIONCHECK_FAIL'		=> 'Error connecting to the server.',
+	
+	'NUMBER_OF_GB'		=> 'Number of users with a guestbook',
+	'NUMBER_OF_POSTS'	=> 'Number of guestbook posts',
 
 	
 
