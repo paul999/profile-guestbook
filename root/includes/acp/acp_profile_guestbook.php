@@ -58,7 +58,12 @@ class acp_profile_guestbook
 					)
 				);
 			break;
-
+			
+			case 'overview':
+				$this->tpl_name = 'acp_profile_guestbook';
+				$this->page_title = 'ACP_PROFILE_GUESTBOOK';			
+				return;
+			break;
 
 			default:
 				trigger_error('NO_MODE', E_USER_ERROR);
