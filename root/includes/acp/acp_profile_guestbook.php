@@ -30,7 +30,7 @@ class acp_profile_guestbook
 		global $config, $phpbb_root_path, $phpbb_admin_path, $phpEx;
 		global $cache;
 
-		$user->add_lang('acp/profile_guestbook');
+		$user->add_lang('acp/mods/profile_guestbook');
 
 		$action	= request_var('action', '');
 		$submit = (isset($_POST['submit'])) ? true : false;
@@ -48,10 +48,10 @@ class acp_profile_guestbook
 		{
 			case 'settings':
 				$display_vars = array(
-					'title'	=> 'ACP_BOARD_SETTINGS',
+					'title'	=> 'ACP_PROFILE_GUESTBOOK_SETTINGS',
 					'vars'	=> array(
-						'legend1'				=> 'ACP_BOARD_SETTINGS',
-						'profile_guestbook_enabled'		=> array('lang' => 'PROFILE_GUESTBOOK_ENABLED',	'validate' => 'bool',	'type' => 'radio:yes_no'),
+						'legend1'				=> 'ACP_PROFILE_GUESTBOOK_SETTINGS',
+						'profile_guestbook_enabled'		=> array('lang' => 'PROFILE_GUESTBOOK_ENABLED',	'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => false),
 
 
 						'legend3'					=> 'ACP_SUBMIT_CHANGES',
@@ -105,7 +105,7 @@ class acp_profile_guestbook
 
 		if ($submit)
 		{
-			add_log('admin', 'LOG_CONFIG_' . strtoupper($mode));
+			add_log('admin', 'LOG_CONFIG_PROFILE_GUESTBOOK');
 
 			trigger_error($user->lang['CONFIG_UPDATED'] . adm_back_link($this->u_action));
 		}

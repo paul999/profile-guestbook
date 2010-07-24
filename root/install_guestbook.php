@@ -218,14 +218,14 @@ $versions = array(
 			array('acp', 'ACP_CAT_PROFILE_GUESTBOOK', array(
 					'module_basename'		=> 'profile_guestbook',
 					'module_langname'		=> 'ACP_PROFILE_GUESTBOOK',
-					'modes'				=> 'overview',
+					'module_mode'			=> 'overview',
 					'module_auth'			=> 'acl_a_gb',
 				),
 			),
 			array('acp', 'ACP_CAT_PROFILE_GUESTBOOK', array(
 					'module_basename'		=> 'profile_guestbook',
 					'module_langname'		=> 'ACP_PROFILE_GUESTBOOK_SETTINGS',
-					'modes'				=> 'settings',
+					'module_mode'			=> 'settings',
 					'module_auth'			=> 'acl_a_gb_settings',
 				),
 							

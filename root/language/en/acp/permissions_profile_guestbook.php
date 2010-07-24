@@ -82,7 +82,10 @@ $lang = array_merge($lang, array(
 	'acl_u_gb_img' => 	array('lang' => 'Can use [img] BBcode', 'cat' => 'pg'),
 	'acl_u_gb_flash' => 	array('lang' => 'Can use [flash] BBcode', 'cat' => 'pg'),
 	'acl_u_gb_icons' => 	array('lang' => 'Can use icons', 'cat' => 'pg'),
-	'acl_u_gb_ignoreflood' 	=> array('lang' => 'Can ignore flood', 'cat' => 'pg'),		
+	'acl_u_gb_ignoreflood' 	=> array('lang' => 'Can ignore flood', 'cat' => 'pg'),	
+	
+	'acl_a_gb'		=> array('lang' => 'Can see profile guestbook overview', 'cat' => 'pg'),	
+	'acl_a_gb_settings'	=> array('lang' => 'Can modify profile guestbook settings', 'cat' => 'pg'),
 ));
 
 
