@@ -30,7 +30,8 @@ class ucp_profile_guestbook
 		global $config, $phpbb_root_path, $phpbb_admin_path, $phpEx;
 		global $cache;
 		
-		$this->tpl_name = '';
+		$this->tpl_name = 'ucp_profile_guestbook';
+		$this->page_title = 'UCP_PROFILE_GUESTBOOK';
 	}	
 }
 
