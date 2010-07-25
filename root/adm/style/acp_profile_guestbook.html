@@ -1,0 +1,67 @@
+<!-- INCLUDE overall_header.html -->
+
+<a name="maincontent"></a>
+
+
+	<h1>{L_WELCOME_GUESTBOOK}</h1>
+
+	<p>{L_ADMIN_GUESTBOOK}</p>
+
+	<!-- IF S_VERSIONCHECK_FAIL -->
+		<div class="errorbox notice">
+			<p>{L_VERSIONCHECK_FAIL}</p>
+			<p><a href="{U_VERSIONCHECK_FORCE}">{L_VERSIONCHECK_FORCE_UPDATE}</a></p>
+		</div>
+	<!-- ELSEIF not S_VERSION_UP_TO_DATE -->
+		<div class="errorbox">
+			<p>{L_VERSION_NOT_UP_TO_DATE_TITLE}</p>
+			<p><a href="{U_VERSIONCHECK_FORCE}">{L_VERSIONCHECK_FORCE_UPDATE}</a></p>
+		</div>
+	<!-- ELSE -->
+		<div class="successbox">
+			<p>{L_VERSION_UP_TO_DATE}</p>
+			<p><a href="{U_VERSIONCHECK_FORCE}">{L_VERSIONCHECK_FORCE_UPDATE}</a></p>
+		</div>
+	<!-- ENDIF -->
+
+
+	<table cellspacing="1">
+		<caption>{L_GUESTBOOK_STATS}</caption>
+		<col class="col1" /><col class="col2" /><col class="col1" /><col class="col2" />
+	<thead>
+	<tr>
+		<th>{L_STATISTIC}</th>
+		<th>{L_VALUE}</th>
+		<th>{L_STATISTIC}</th>
+		<th>{L_VALUE}</th>
+	</tr>
+	</thead>
+	<tbody>
+		<tr>
+			<td>{L_NUMBER_OF_GB}</td>
+			<td>{NUMBER_OF_GB}</td>
+			<td>{L_NUMBER_OF_POSTS}</td>
+			<td>{NUMBER_OF_POSTS}</td>
+		</tr>
+	</tbody>
+	</table>
+
+	<!-- IF S_ACTION_OPTIONS -->
+		<fieldset>
+			<legend>{L_GB_OPTIONS}</legend>
+
+			<form id="action_delete_all_form" method="post" action="{U_ACTION}">
+				<dl>
+					<dt><label for="action_delete_all">{L_DELETE_ALL}</label><br /><span>&nbsp;</span></dt>
+					<dd><input type="hidden" name="action" value="delete_all" /><input class="button2" type="submit" id="delete_all" name="delete_all" value="{L_RUN}" /></dd>
+				</dl>
+			</form>
+  		</fieldset>
+	<!-- ENDIF -->
+
+
+
+
+
+
+<!-- INCLUDE overall_footer.html -->

@@ -43,6 +43,11 @@ function hook_profile_guestbook(&$hook)
 		include("{$phpbb_root_path}includes/class_guestbook.$phpEx");
 	}
 	
+	if (!defined('GUESTBOOK_TABLE'))
+	{
+		include("{$phpbb_root_path}includes/constants_guestbook.$phpEx");
+	}
+	
 	$gb = new guestbook();
 	$gb->run();
 }
