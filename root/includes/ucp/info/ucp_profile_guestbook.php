@@ -20,7 +20,7 @@ class ucp_profile_guestbook_info
 			'title'		=> 'UCP_PROFILE_GUESTBOOK',
 			'version'	=> '1.0.0',
 			'modes'		=> array(
-
+				'settings'		=> array('title' => 'UCP_PROFILE_GUESTBOOK_SETTINGS', 'auth' => '', 'cat' => array('UCP_PROFILE_GUESTBOOK')),
 
 			),
 		);
