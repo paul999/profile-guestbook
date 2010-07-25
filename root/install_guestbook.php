@@ -242,6 +242,9 @@ $versions = array(
 					'module_mode'			=> 'settings',
 				),
 			),		
+	'0.1.0-dev3'	=> array(
+		'config_add' array(
+			array('profile_guestbook_notification', 0),
 		),
 	),
 );
