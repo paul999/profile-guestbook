@@ -68,6 +68,77 @@ class acp_profile_guestbook
 				$this->tpl_name = 'acp_profile_guestbook';
 				$this->page_title = 'ACP_PROFILE_GUESTBOOK';		
 				
+				$action = request_var('action', '');
+
+				if ($action)
+				{
+					if (!confirm_box(true))
+					{
+						switch ($action)
+						{
+							case 'delete_all':
+								$confirm = true;
+								$confirm_lang = 'CONFIRM_GB_DELETE_ALL';
+							break;
+							default:
+								$confirm = true;
+								$confirm_lang = 'CONFIRM_OPERATION';
+						}
+
+						if ($confirm)
+						{
+							confirm_box(false, $user->lang[$confirm_lang], build_hidden_fields(array(
+								'i'		=> $id,
+								'mode'		=> $mode,
+								'action'	=> $action,
+							)));
+						}
+					}
+					else
+					{
+						switch ($action)
+						{
+							case 'delete_all':
+								/**
+								* @todo, fix all other tables with relations!
+								* @todo, permissions
+								**/
+								
+								/**
+								 * Truncate cant be used for sqlite/firebird.
+								 * Code from acp_main.php
+								 **/
+								switch ($db->sql_layer)
+								{
+									case 'sqlite':
+									case 'firebird':
+										$db->sql_query("DELETE FROM " . GUESTBOOK_TABLE);
+									break;
+
+									default:
+										$db->sql_query("TRUNCATE TABLE " . GUESTBOOK_TABLE);
+									break;
+								}
+								$sql_ary = array(
+									'user_guestbook_first_post_id'	=> 0,
+									'user_guestbook_last_post_id'	=> 0,
+									'user_guestbook_posts'		=> 0,
+								);
+								
+								// No WHERE here, we deleted all posts, so we need to reset all users data!
+								$sql = 'UPDATE ' . USERS_TABLE . ' SET ' . $db->sql_build_array('UPDATE', $sql_ary);
+								$db->sql_query($sql);
+								
+								add_log('admin', 'LOG_GB_DELETE_ALL_POSTS');
+							break;
+						
+							default:
+								trigger_error('NO_MODE');
+						}
+					}
+				}
+				
+				
 				$latest_version_info = false;
 				if (($latest_version_info = $this->obtain_latest_version_info(request_var('versioncheck_force', false))) === false)
 				{
@@ -87,7 +158,8 @@ class acp_profile_guestbook
 				
 				$template->assign_vars(array(
 					'U_VERSIONCHECK_FORCE'	=> $this->u_action . '&amp;versioncheck_force=1',		
-					'S_ACTION_OPTIONS'	=> $auth->acl_get('a_gb_settings') ? true : false, // @TODO: Decided i we want this permission		
+					'S_ACTION_OPTIONS'	=> $auth->acl_get('a_gb_settings') ? true : false, // @TODO: Decided i we want this permission	
+					'U_ACTION'		=> $this->u_action,	
 				));				
 				return;
 			break;
