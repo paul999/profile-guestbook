@@ -241,7 +241,9 @@ $versions = array(
 					'module_langname'		=> 'UCP_PROFILE_GUESTBOOK_SETTINGS',
 					'module_mode'			=> 'settings',
 				),
-			),		
+			),	
+		),
+	),	
 	'0.1.0-dev3'	=> array(
 		'config_add' array(
 			array('profile_guestbook_notification', 0),
