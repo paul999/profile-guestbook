@@ -36,7 +36,8 @@ class ucp_profile_guestbook
 		$user->add_lang('mods/ucp_profile_guestbook');
 		
 		$template->assign_vars(array(
-			'L_TITLE'	=> $user->lang['UCP_PROFILE_GUESTBOOK_SETTINGS'],
+			'L_TITLE'		=> $user->lang['UCP_PROFILE_GUESTBOOK_SETTINGS'],
+			'S_SELECT_NOTIFY'	=> ($config['profile_guestbook_notification']) ? true : false,
 		));
 	}	
 }

@@ -45,6 +45,11 @@ if (empty($lang) || !is_array($lang))
 $lang = array_merge($lang, array(
 	'ENABLE_NOTIFICATION'	=> 'Enable notification for new guestbook posts',
 	'ONLY_PM'		=> 'Only PM is enabled for notification. Contact the administrator for other methods.',
+	
+	'NOTIFY_METHOD_PM'		=> 'PM only',
+	'NOTIFY_METHOD_EMAIL_PM'	=> 'PM and e-mail',
+	'NOTIFY_METHOD_IM_PM'		=> 'PM and jabber',
+	'NOTIFY_METHOD_ALL'		=> 'PM, jabber and e-mail',
 ));
 
 ?>
