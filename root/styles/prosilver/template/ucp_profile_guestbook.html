@@ -17,6 +17,21 @@
 			<label for="not2"><input type="radio" name="enable_notification" id="not2" value="0"<!-- IF not S_ENABLE_NOTIFICATION --> checked="checked"<!-- ENDIF --> /> {L_NO}</label>
 		</dd>
 	</dl>
+	<!-- IF S_SELECT_NOTIFY -->
+		<dl>
+			<dt><label for="notifymethod0">{L_NOTIFY_METHOD}:</label></dt>
+			<dd>
+				<label for="notifymethod0"><input type="radio" name="notifymethod" id="notifymethod0" value="0"<!-- IF S_NOTIFY_EMAIL --> checked="checked"<!-- ENDIF --> /> {L_NOTIFY_METHOD_EMAIL}</label> 
+				<label for="notifymethod1"><input type="radio" name="notifymethod" id="notifymethod1" value="1"<!-- IF S_NOTIFY_IM --> checked="checked"<!-- ENDIF --> /> {L_NOTIFY_METHOD_IM}</label> 
+				<label for="notifymethod2"><input type="radio" name="notifymethod" id="notifymethod2" value="2"<!-- IF S_NOTIFY_PM --> checked="checked"<!-- ENDIF --> /> {L_NOTIFY_METHOD_PM}</label>
+				<label for="notifymethod3"><input type="radio" name="notifymethod" id="notifymethod3" value="3"<!-- IF S_NOTIFY_EMAIL_PM --> checked="checked"<!-- ENDIF --> /> {L_NOTIFY_METHOD_EMAIL_PM}</label>
+			</dd>
+		</dl>
+	<!-- ELSE -->
+		<dl>
+			<dt>{L_ONLY_PM}<dt>
+			<dd></dd>
+	<!-- ENDIF -->	
 
 	</fieldset>
 

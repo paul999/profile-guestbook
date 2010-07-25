@@ -17,7 +17,7 @@ if (!defined('IN_PHPBB'))
 }
 
 /**
-* @package acp
+* @package ucp
 */
 class ucp_profile_guestbook
 {
@@ -32,6 +32,12 @@ class ucp_profile_guestbook
 		
 		$this->tpl_name = 'ucp_profile_guestbook';
 		$this->page_title = 'UCP_PROFILE_GUESTBOOK';
+		
+		$user->add_lang('mods/ucp_profile_guestbook');
+		
+		$template->assign_vars(array(
+			'L_TITLE'	=> $user->lang['UCP_PROFILE_GUESTBOOK_SETTINGS'],
+		));
 	}	
 }
 
