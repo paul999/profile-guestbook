@@ -37,6 +37,11 @@ class acp_profile_guestbook
 
 		$form_key = 'acp_pg';
 		add_form_key($form_key);
+		
+		if (!defined('GUESTBOOK_TABLE'))
+		{
+			include("{$phpbb_root_path}inlcludes/constants_guestbook.$phpEx");
+		}		
 
 		/**
 		*	Validation types are:
