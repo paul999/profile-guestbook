@@ -67,7 +67,6 @@ class acp_profile_guestbook
 
 				if ($action)
 				{
-					
 					if (!confirm_box(true))
 					{
 						switch ($action)
@@ -108,13 +107,22 @@ class acp_profile_guestbook
 								{
 									case 'sqlite':
 									case 'firebird':
-										$db->sql_query("DELETE FROM $table");
+										$db->sql_query("DELETE FROM " . GUESTBOOK_TABLE);
 									break;
 
 									default:
-										$db->sql_query("TRUNCATE TABLE $table");
+										$db->sql_query("TRUNCATE TABLE " . GUESTBOOK_TABLE);
 									break;
 								}
+								$sql_ary = array(
+									'user_guestbook_first_post_id'	=> 0,
+									'user_guestbook_last_post_id'	=> 0,
+									'user_guestbook_posts'		=> 0,
+								);
+								
+								// No WHERE here, we deleted all posts, so we need to reset all users data!
+								$sql = 'UPDATE ' . USERS_TABLE . ' SET ' . $db->sql_build_array($sql_ary);
+								$db->sql_query($sql);
 								
 								add_log('admin', 'LOG_GB_DELETE_ALL_POSTS');
 							break;
@@ -145,7 +153,8 @@ class acp_profile_guestbook
 				
 				$template->assign_vars(array(
 					'U_VERSIONCHECK_FORCE'	=> $this->u_action . '&amp;versioncheck_force=1',		
-					'S_ACTION_OPTIONS'	=> $auth->acl_get('a_gb_settings') ? true : false, // @TODO: Decided i we want this permission		
+					'S_ACTION_OPTIONS'	=> $auth->acl_get('a_gb_settings') ? true : false, // @TODO: Decided i we want this permission	
+					'U_ACTION'		=> $this->u_action,	
 				));				
 				return;
 			break;
