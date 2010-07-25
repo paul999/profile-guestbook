@@ -232,6 +232,23 @@ $versions = array(
 			),
 		),		
 	),
+	'0.1.0-dev2'	=> array(
+		'module_add'	=> array(
+			array('ucp', '', 'UCP_CAT_PROFILE_GUESTBOOK'),
+			
+			array('ucp', 'UCP_CAT_PROFILE_GUESTBOOK', array(
+					'module_basename'		=> 'profile_guestbook',
+					'module_langname'		=> 'UCP_PROFILE_GUESTBOOK_SETTINGS',
+					'module_mode'			=> 'settings',
+				),
+			),	
+		),
+	),	
+	'0.1.0-dev3'	=> array(
+		'config_add' array(
+			array('profile_guestbook_notification', 0),
+		),
+	),
 );
 
 // Include the UMIF Auto file and everything else will be handled automatically.

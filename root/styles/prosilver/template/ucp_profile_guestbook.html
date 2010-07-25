@@ -1,0 +1,50 @@
+<!-- INCLUDE ucp_header.html -->
+
+<form id="ucp" method="post" action="{S_UCP_ACTION}"{S_FORM_ENCTYPE}>
+
+<h2>{L_TITLE}</h2>
+
+<div class="panel">
+	<div class="inner"><span class="corners-top"><span></span></span>
+	<p>{L_PROFILE_INFO_NOTICE}</p>
+
+	<fieldset>
+	<!-- IF ERROR --><p class="error">{ERROR}</p><!-- ENDIF -->
+	<dl>
+		<dt><label for="enable_notification">{L_ENABLE_NOTIFICATION}:</label></dt>
+		<dd>
+			<label for="not1"><input type="radio" name="enable_notification" id="not1" value="1"<!-- IF S_ENABLE_NOTIFICATION --> checked="checked"<!-- ENDIF --> /> {L_YES}</label> 
+			<label for="not2"><input type="radio" name="enable_notification" id="not2" value="0"<!-- IF not S_ENABLE_NOTIFICATION --> checked="checked"<!-- ENDIF --> /> {L_NO}</label>
+		</dd>
+	</dl>
+	<!-- IF S_SELECT_NOTIFY -->
+		<dl>
+			<dt><label for="notifymethod0">{L_NOTIFY_METHOD}:</label></dt>
+			<dd>
+				<label for="notifymethod0"><input type="radio" name="notifymethod" id="notifymethod0" value="0"<!-- IF S_NOTIFY_EMAIL --> checked="checked"<!-- ENDIF --> /> {L_NOTIFY_METHOD_EMAIL}</label> 
+				<label for="notifymethod1"><input type="radio" name="notifymethod" id="notifymethod1" value="1"<!-- IF S_NOTIFY_IM --> checked="checked"<!-- ENDIF --> /> {L_NOTIFY_METHOD_IM}</label> 
+				<label for="notifymethod2"><input type="radio" name="notifymethod" id="notifymethod2" value="2"<!-- IF S_NOTIFY_PM --> checked="checked"<!-- ENDIF --> /> {L_NOTIFY_METHOD_PM}</label>
+				<label for="notifymethod3"><input type="radio" name="notifymethod" id="notifymethod3" value="3"<!-- IF S_NOTIFY_EMAIL_PM --> checked="checked"<!-- ENDIF --> /> {L_NOTIFY_METHOD_EMAIL_PM}</label>
+				<label for="notifymethod4"><input type="radio" name="notifymethod" id="notifymethod4" value="4"<!-- IF S_NOTIFY_IM_PM --> checked="checked"<!-- ENDIF --> /> {L_NOTIFY_METHOD_IM_PM}</label>
+				<label for="notifymethod5"><input type="radio" name="notifymethod" id="notifymethod5" value="5"<!-- IF S_NOTIFY_ALL --> checked="checked"<!-- ENDIF --> /> {L_NOTIFY_METHOD_ALL}</label>
+			</dd>
+		</dl>
+	<!-- ELSE -->
+		<dl>
+			<dt>{L_ONLY_PM}<dt>
+			<dd></dd>
+	<!-- ENDIF -->	
+
+	</fieldset>
+
+	<span class="corners-bottom"><span></span></span></div>
+</div>
+
+<fieldset class="submit-buttons">
+	{S_HIDDEN_FIELDS}<input type="reset" value="{L_RESET}" name="reset" class="button2" />&nbsp; 
+	<input type="submit" name="submit" value="{L_SUBMIT}" class="button1" />
+	{S_FORM_TOKEN}
+</fieldset>
+</form>
+
+<!-- INCLUDE ucp_footer.html -->

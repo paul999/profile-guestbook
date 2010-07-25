@@ -52,6 +52,7 @@
 				<rev-version>0.1.0</rev-version>
 				<changelog lang="en">
 					<change>Bug #4: Quick reply is shown unwanted to guests.</change>
+					<change>Feature #5: New message notification via several options.</change>
 					<change>Feature #6: New configuration page for basic settings.</change>
 					<change>Feature #7: Added new overview page with version check.</change>
 				</changelog>
