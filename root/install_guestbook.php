@@ -234,7 +234,7 @@ $versions = array(
 	),
 	'0.1.0-dev2'	=> array(
 		'module_add'	=> array(
-			array('ucp', 'UCP_PREFS', 'UCP_CAT_PROFILE_GUESTBOOK'),
+			array('ucp', '', 'UCP_CAT_PROFILE_GUESTBOOK'),
 			
 			array('ucp', 'UCP_CAT_PROFILE_GUESTBOOK', array(
 					'module_basename'		=> 'profile_guestbook',
