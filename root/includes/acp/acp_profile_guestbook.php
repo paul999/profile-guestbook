@@ -40,7 +40,7 @@ class acp_profile_guestbook
 		
 		if (!defined('GUESTBOOK_TABLE'))
 		{
-			include("{$phpbb_root_path}inlcludes/constants_guestbook.$phpEx");
+			include("{$phpbb_root_path}includes/constants_guestbook.$phpEx");
 		}		
 
 		/**
