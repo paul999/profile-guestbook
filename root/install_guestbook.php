@@ -232,6 +232,11 @@ $versions = array(
 			),
 		),		
 	),
+	'0.1.0-dev3'	=> array(
+		'config_add' array(
+			array('profile_guestbook_notification', 0),
+		),
+	),
 );
 
 // Include the UMIF Auto file and everything else will be handled automatically.
