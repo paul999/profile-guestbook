@@ -126,7 +126,7 @@ class acp_profile_guestbook
 								);
 								
 								// No WHERE here, we deleted all posts, so we need to reset all users data!
-								$sql = 'UPDATE ' . USERS_TABLE . ' SET ' . $db->sql_build_array($sql_ary);
+								$sql = 'UPDATE ' . USERS_TABLE . ' SET ' . $db->sql_build_array('UPDATE', $sql_ary);
 								$db->sql_query($sql);
 								
 								add_log('admin', 'LOG_GB_DELETE_ALL_POSTS');
