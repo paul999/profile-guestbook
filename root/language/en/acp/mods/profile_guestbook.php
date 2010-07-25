@@ -41,6 +41,9 @@ $lang = array_merge($lang, array(
 	
 	'PROFILE_GUESTBOOK_ENABLED'	=> 'Profile Guestbook MOD enabled',
 	
+	'PROFILE_GUESTBOOK_NOTIFICATION'		=> 'Allow other notification methods',
+	'PROFILE_GUESTBOOK_NOTIFICATION_EXPLAIN'	=> 'Allow users to choose for other notification methods, like email and jabber,  besides PM.',
+	
 
 	'WELCOME_GUESTBOOK'	=> 'Profile Guestbook overview',
 	'ADMIN_GUESTBOOK'	=> 'You can find here a basic overview of the Profile Guestbook MOD with some basics stats and some options. <br />If you find any bugs, you should report these at the bugtracker. This bugtracker can be found <a href="http://phpbbguestbook.com/viewforum.php?f=5">here</a>. Support for the MOD can be found at the same board',
