@@ -7,7 +7,7 @@
 * @license http://opensource.org/licenses/gpl-license.php GNU Public License
 *
 */
-define ('GUESTBOOK_TABLE', 'phpbb_guestbook');
+
 /**
 * @ignore
 */

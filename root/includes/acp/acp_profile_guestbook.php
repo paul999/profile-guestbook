@@ -37,6 +37,11 @@ class acp_profile_guestbook
 
 		$form_key = 'acp_pg';
 		add_form_key($form_key);
+		
+		if (!defined('GUESTBOOK_TABLE'))
+		{
+			include("{$phpbb_root_path}inlcludes/constants_guestbook.$phpEx");
+		}		
 
 		/**
 		*	Validation types are:
@@ -144,7 +149,7 @@ class acp_profile_guestbook
 					$latest_version_info = explode("\n", $latest_version_info);
 
 					$latest_version = str_replace('rc', 'RC', strtolower(trim($latest_version_info[0])));
-					$current_version = str_replace('rc', 'RC', strtolower($config['version']));
+					$current_version = str_replace('rc', 'RC', strtolower($config['pg_version']));
 
 					$template->assign_vars(array(
 						'S_VERSION_UP_TO_DATE'	=> version_compare($current_version, $latest_version, '<') ? false : true,
