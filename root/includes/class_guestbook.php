@@ -894,8 +894,11 @@ class guestbook
 		{
 			include($phpbb_root_path . 'includes/functions_guestbook.' . $phpEx);
 		}
-
-		include($phpbb_root_path . 'includes/message_parser.' . $phpEx);
+		
+		if (!class_exists('parse_message'))
+		{
+			include($phpbb_root_path . 'includes/message_parser.' . $phpEx);
+		}
 
 
 		$user->add_lang('posting');
@@ -919,7 +922,7 @@ class guestbook
 		
 			$redirect = append_sid("{$phpbb_root_path}memberlist.$phpEx", "mode=viewprofile&amp;u={$this->user_id}&amp;gbmode=display&amp;{$post_id}#p{$post_id}");
 			redirect($redirect);
-		}
+		}0
 
 
 		// We need to know some basic information in all cases before we do anything.
@@ -1262,7 +1265,10 @@ class guestbook
 			// Validate username
 			if (($post_data['username'] && !$user->data['is_registered']) || ($mode == 'edit' && $post_data['poster_id'] == ANONYMOUS && $post_data['username'] && $post_data['post_username'] && $post_data['post_username'] != $post_data['username']))
 			{
-				include($phpbb_root_path . 'includes/functions_user.' . $phpEx);
+				if (!function_exists('validate_user'))
+				{
+					include($phpbb_root_path . 'includes/functions_user.' . $phpEx);
+				}
 
 				if (($result = validate_username($post_data['username'], (!empty($post_data['post_username'])) ? $post_data['post_username'] : '')) !== false)
 				{
