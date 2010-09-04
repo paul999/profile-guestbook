@@ -922,7 +922,7 @@ class guestbook
 		
 			$redirect = append_sid("{$phpbb_root_path}memberlist.$phpEx", "mode=viewprofile&amp;u={$this->user_id}&amp;gbmode=display&amp;{$post_id}#p{$post_id}");
 			redirect($redirect);
-		}0
+		}
 
 
 		// We need to know some basic information in all cases before we do anything.
@@ -1163,7 +1163,6 @@ class guestbook
 		$url_status		= ($config['allow_post_links']) ? true : false;
 		$flash_status	= ($bbcode_status && $auth->acl_get('u_gb_flash') && $config['allow_post_flash']) ? true : false;
 		$quote_status	= true;
-
 
 		if ($submit || $preview || $refresh)
 		{
@@ -1561,6 +1560,7 @@ class guestbook
 			'S_BBCODE_URL'			=> $url_status,
 			'S_BBCODE_FLASH'		=> $flash_status,
 			'S_BBCODE_QUOTE'		=> $quote_status,
+			'SIGNATURE'			=> '',
 
 			'S_POST_ACTION'			=> $s_action,
 			'S_HIDDEN_FIELDS'		=> $s_hidden_fields)
