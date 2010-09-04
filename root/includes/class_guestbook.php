@@ -1471,12 +1471,12 @@ class guestbook
 		switch ($mode)
 		{
 			case 'post':
-				$page_title = $user->lang['POST_TOPIC'];
+				$page_title = $user->lang['POST_GUESTBOOK'];
 			break;
 
 			case 'quote':
 			case 'reply':
-				$page_title = $user->lang['POST_REPLY'];
+				$page_title = $user->lang['POST_GUESTBOOK'];
 			break;
 
 			case 'delete':
