@@ -41,8 +41,8 @@ $lang = array_merge($lang, array(
 	
 	'PROFILE_GUESTBOOK_ENABLED'	=> 'Profile Guestbook MOD enabled',
 	
-	'PROFILE_GUESTBOOK_NOTIFICATION'		=> 'Allow other notification methods',
-	'PROFILE_GUESTBOOK_NOTIFICATION_EXPLAIN'	=> 'Allow users to choose for other notification methods, like email and jabber,  besides PM.',
+	'PROFILE_GUESTBOOK_NOTIFICATION'		=> 'Enable guestbook notifications',
+	'PROFILE_GUESTBOOK_NOTIFICATION_EXPLAIN'	=> 'If enabled, users are allowed to receive notifications of new guestbook posts.',
 	
 
 	'WELCOME_GUESTBOOK'	=> 'Profile Guestbook overview',
