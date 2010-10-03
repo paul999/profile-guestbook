@@ -265,7 +265,7 @@ function submit_gb_post($mode, $subject, $username, &$data, $update_message = tr
 	// Send Notifications
 	if ($mode != 'edit' && $mode != 'delete')
 	{
-		//gb_user_notification($mode, $subject, $data['topic_title'], $data['forum_name'], $data['forum_id'], $data['topic_id'], $data['post_id']);
+		gb_user_notification($data);
 	}
 
 	$params = $add_anchor = '';
@@ -273,4 +273,85 @@ function submit_gb_post($mode, $subject, $username, &$data, $update_message = tr
 	return true;
 }
 
+function gb_user_notification ($data)
+{
+	global $db, $config;
+	
+	// First, make sure notifications are enabled
+	
+	if (!$config['profile_guestbook_notification'] || $data['user_id'] == ANONYMOUS)
+	{
+		return false;
+	}
+	
+	$sql = 'SELECT user_guestbook_notification, user_guestbook_notification_enabled FROM ' . USERS_TABLE . '
+		WHERE user_id = ' . (int)$data['user_id'];
+		
+	$result = $db->sql_query($sql);
+	
+	$row = $db->sql_fetchrow($result);
+	$db->sql_freeresult();
+	
+	if (!$row['user_guestbook_notification_enabled'])
+	{
+		return false;
+	}
+	
+	$send = array(
+		'pm'	=> false,
+		'im'	=> false,
+		'mail'	=> false,
+	);
+	
+	switch ($row['user_guestbook_notification'])
+	{
+		case GB_NOTIFY_EMAIL:
+			if (!$config['email_enable'])
+			{
+				// Email disabled, and only email selected, return
+				return false;
+			}
+			$send['mail'] = true;
+		break;
+		case GB_NOTIFY_IM:
+			if (!$config['jab_enable'])
+			{
+				// IM disabled, and only IM selected, return
+				return false;
+			}
+			$send['im'] = true;
+		break;
+		case GB_NOTIFY_PM:
+			$send['pm'] = true;
+		break;
+		case GB_NOTIFY_EMAIL_PM:
+			if ($config['email_enable'])
+			{
+				$send['email'] = true;
+			}
+			$send['pm'] = true;
+		break;
+		case GB_NOTIFY_IM_PM:
+			if ($config['jab_enable'])
+			{
+				$send['im'] = true;
+			}
+			$send['pm'] = true;		
+		break;
+		case GB_NOTIFY_ALL:		
+			if ($config['email_enable'])
+			{
+				$send['email'] = true;
+			}
+			
+			if ($config['jab_enable'])
+			{
+				$send['im'] = true;
+			}
+			$send['pm'] = true;				
+		break;
+		default: 
+			return false;
+	}
+}
 ?>
