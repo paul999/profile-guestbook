@@ -98,11 +98,11 @@ class acp_profile_guestbook
 					{
 						switch ($action)
 						{
-							case 'delete_all':
-								/**
-								* @todo, fix all other tables with relations!
-								* @todo, permissions
-								**/
+							case 'delete_all':							
+								if ($user->data['user_type'] != USER_FOUNDER)
+								{
+									trigger_error('NO_PERMISSION');
+								}
 								
 								/**
 								 * Truncate cant be used for sqlite/firebird.
@@ -160,6 +160,7 @@ class acp_profile_guestbook
 					'U_VERSIONCHECK_FORCE'	=> $this->u_action . '&amp;versioncheck_force=1',		
 					'S_ACTION_OPTIONS'	=> $auth->acl_get('a_gb_settings') ? true : false, // @TODO: Decided i we want this permission	
 					'U_ACTION'		=> $this->u_action,	
+					'S_FOUNDER'		=> ($user->data['user_type'] == USER_FOUNDER),
 				));				
 				return;
 			break;
