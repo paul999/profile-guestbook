@@ -373,7 +373,10 @@ function gb_user_notification ($data)
 	}
 	if ($send['mail'] || $send['im'])
 	{
-		include_once($phpbb_root_path . 'includes/functions_messenger.' . $phpEx);
+		if (!class_exists('messenger'))
+		{
+			include($phpbb_root_path . 'includes/functions_messenger.' . $phpEx);
+		}
 		$messenger = new messenger();
 		
 		switch (true)
