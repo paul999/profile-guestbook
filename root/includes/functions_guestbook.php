@@ -410,7 +410,7 @@ function gb_user_notification ($data)
 
 		$messenger->assign_vars(array(
 			'USERNAME'		=> htmlspecialchars_decode($addr['name']),
-			'U_POST'		=> generate_board_url() . "/memberlist.$phpEx?mode=priofile&u={$data['user_id']}",
+			'U_POST'		=> generate_board_url() . "/memberlist.$phpEx?mode=viewprofile&u={$data['user_id']}",
 
 		));
 
@@ -425,9 +425,15 @@ function gb_user_notification ($data)
 	{
 		global $user;
 		
+		if (!function_exists('submit_pm'))
+		{
+			global $phpbb_root_path, $phpEx;
+			include("{$phpbb_root_path}includes/functions_privmsgs.$phpEx");
+		}
+		
 		// note that multibyte support is enabled here
 		$my_subject = $user->lang['NEW_GUESTBOOK_POST'];
-		$my_text    = $user->lang['NEW_GUESTBOOK_POST_TXT'];
+		$my_text    = sprintf($user->lang['NEW_GUESTBOOK_POST_TXT'], '[url]' . generate_board_url() . "/memberlist.$phpEx?mode=viewprofile&u={$data['user_id']}[/url]");
 		 
 		// variables to hold the parameters for submit_pm
 		$poll = $uid = $bitfield = $options = '';
