@@ -1022,6 +1022,12 @@ class guestbook
 			case 'quote':
 
 				$post_data['post_edit_locked'] = 0;
+				
+				// @TODO: Decide if we want to add a config option/ucp option/checkbox for this feature.
+				if ($post_data['poster_id'] != ANONYMOUS) // Do not send it to the guests user guestbook (For obvious reasons :))
+				{
+					$post_data['orginal_author']   = $post_data['poster_id'];
+				}
 
 			// no break;
 
@@ -1319,7 +1325,7 @@ class guestbook
 				if ($submit)
 				{
 					$data = array(
-						'user_id'			=> $this->user_id,
+						'user_id'			=> (int)(($mode == 'quote' && isset($post_data['orginal_author'])) ? $post_data['orginal_author'] : $this->user_id),
 						'topic_title'			=> (empty($post_data['topic_title'])) ? $post_data['post_subject'] : $post_data['topic_title'],
 						'post_id'				=> (int) $post_id,
 						'icon_id'				=> (int) $post_data['icon_id'],
