@@ -165,7 +165,7 @@ function submit_gb_post($mode, $subject, $username, &$data, $update_message = tr
 		case 'reply':
 			$sql_data[GUESTBOOK_TABLE]['sql'] = array(
 				'user_id'			=> (int) $data['user_id'],
-				'poster_id'			=> (int) $user->data['user_id'],
+				'poster_id'			=> (int) ((isset($data['poster_id'])) ? $data['poster_id'] : $user->data['user_id']),
 				'icon_id'			=> $data['icon_id'],
 				'poster_ip'			=> $user->ip,
 				'post_time'			=> $current_time,

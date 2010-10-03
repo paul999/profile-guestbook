@@ -60,5 +60,8 @@ $lang = array_merge($lang, array(
 	
 	'NO_TOPIC_ICON'		=> 'No icon',
 	'RETURN_PROFILE'	=> '%sReturn back to the profile',
+	
+	'GUESTBOOK_REPLY'	=> 'Post a comment',
+	'POST_GUESTBOOK'	=> 'Post a guestbook comment',
 ));
 ?>

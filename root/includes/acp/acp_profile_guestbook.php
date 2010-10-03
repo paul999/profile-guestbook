@@ -99,11 +99,11 @@ class acp_profile_guestbook
 					{
 						switch ($action)
 						{
-							case 'delete_all':
-								/**
-								* @todo, fix all other tables with relations!
-								* @todo, permissions
-								**/
+							case 'delete_all':							
+								if ($user->data['user_type'] != USER_FOUNDER)
+								{
+									trigger_error('NO_PERMISSION');
+								}
 								
 								/**
 								 * Truncate cant be used for sqlite/firebird.
@@ -132,6 +132,9 @@ class acp_profile_guestbook
 								
 								add_log('admin', 'LOG_GB_DELETE_ALL_POSTS');
 							break;
+							case 'resync':
+							
+							break;
 						
 							default:
 								trigger_error('NO_MODE');
@@ -140,7 +143,7 @@ class acp_profile_guestbook
 				}
 				
 				
-				$latest_version_info = false;
+				$latest_version_info = $latest_version = false;
 				if (($latest_version_info = $this->obtain_latest_version_info(request_var('versioncheck_force', false))) === false)
 				{
 					$template->assign_var('S_VERSIONCHECK_FAIL', true);
@@ -157,10 +160,28 @@ class acp_profile_guestbook
 					));
 				}	
 				
+				// Select how many users have a guestbook with posts :)
+				
+				$sql = 'SELECT COUNT(DISTINCT user_id) as total FROM ' . GUESTBOOK_TABLE;
+				$result = $db->sql_query($sql);  
+				$total_guestbooks = $db->sql_fetchfield('total');
+				$db->sql_freeresult($result);
+				
+				$sql = 'SELECT COUNT(post_id) as total FROM ' . GUESTBOOK_TABLE;
+				$result = $db->sql_query($sql);  
+				$total_posts = $db->sql_fetchfield('total');
+				$db->sql_freeresult($result);
+				
 				$template->assign_vars(array(
 					'U_VERSIONCHECK_FORCE'	=> $this->u_action . '&amp;versioncheck_force=1',		
-					'S_ACTION_OPTIONS'	=> $auth->acl_get('a_gb_settings') ? true : false, // @TODO: Decided i we want this permission	
+					'S_ACTION_OPTIONS'	=> $auth->acl_get('a_gb_settings') ? true : false, 	
 					'U_ACTION'		=> $this->u_action,	
+					'S_FOUNDER'		=> ($user->data['user_type'] == USER_FOUNDER),
+					
+					'NUMBER_OF_GB'		=> $total_guestbooks,
+					'NUMBER_OF_POSTS'	=> $total_posts,
+					'CUR_VERSION'		=> $config['pg_version'],
+					'LATEST_VERSION'	=> ($latest_version_info && $latest_version) ? $latest_version : false,
 				));				
 				return;
 			break;
