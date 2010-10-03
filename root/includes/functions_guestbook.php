@@ -284,15 +284,33 @@ function gb_user_notification ($data)
 		return false;
 	}
 	
-	$sql = 'SELECT user_guestbook_notification, user_guestbook_notification_enabled FROM ' . USERS_TABLE . '
-		WHERE user_id = ' . (int)$data['user_id'];
+	// Get banned User ID's
+	$sql = 'SELECT ban_userid
+		FROM ' . BANLIST_TABLE . '
+		WHERE ban_userid <> 0
+			AND ban_exclude <> 1';
+	$result = $db->sql_query($sql);
+
+	$sql_ignore_users = array(ANONYMOUS, $user->data['user_id']);
+	while ($row = $db->sql_fetchrow($result))
+	{
+		$sql_ignore_users[] = (int) $row['ban_userid'];
+	}
+	$db->sql_freeresult($result);	
+	
+	$sql = 'SELECT u.user_guestbook_notification, u.user_guestbook_notification_enabled, u.user_id, u.username, u.user_email, u.user_lang, u.user_notify_type, u.user_jabber
+		FROM ' . USERS_TABLE . ' u
+		WHERE
+			AND ' . $db->sql_in_set('user_id', $sql_ignore_users, true) . '
+			AND u.user_type IN (' . USER_NORMAL . ', ' . USER_FOUNDER . ')		
+			AND user_id = ' . (int)$data['user_id'];
 		
 	$result = $db->sql_query($sql);
 	
 	$row = $db->sql_fetchrow($result);
 	$db->sql_freeresult();
 	
-	if (!$row['user_guestbook_notification_enabled'])
+	if (!$row || !$row['user_guestbook_notification_enabled'])
 	{
 		return false;
 	}
@@ -353,5 +371,52 @@ function gb_user_notification ($data)
 		default: 
 			return false;
 	}
+	if ($send['mail'] || $send['im'])
+	{
+		include_once($phpbb_root_path . 'includes/functions_messenger.' . $phpEx);
+		$messenger = new messenger();
+		
+		switch (true)
+		{
+			case $send['mail'] && !$send['im']:
+				$method = NOTIFY_EMAIL;
+			break;
+			
+			case !$send['mail'] && $send['im']:
+				$method = NOTIFY_IM;
+			break;
+			
+			case $send['mail'] && $send['im']:
+				$method = NOTIFY_BOTH;
+			break;
+		}
+
+		$addr = array(
+			'method'	=> $method,
+			'email'		=> $row['user_email'],
+			'jabber'	=> $row['user_jabber'],
+			'username'	=> $row['username'],
+			'lang'		=> $row['user_lang'],
+			'user_id'	=> $row['user_id'],
+		);
+
+		$messenger->template('guestbook_notification', $addr['lang']);
+
+		$messenger->to($addr['email'], $addr['name']);
+		$messenger->im($addr['jabber'], $addr['name']);
+
+		$messenger->assign_vars(array(
+			'USERNAME'		=> htmlspecialchars_decode($addr['name']),
+			'U_TOPIC'		=> generate_board_url() . "/memberlist.$phpEx?u={$data[user_id]}",
+
+		));
+
+		$messenger->send($addr['method']);
+
+		unset($msg_list_ary);
+
+		$messenger->save_queue();
+	}
+	
 }
 ?>
