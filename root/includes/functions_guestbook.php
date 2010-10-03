@@ -291,17 +291,16 @@ function gb_user_notification ($data)
 			AND ban_exclude <> 1';
 	$result = $db->sql_query($sql);
 
-	$sql_ignore_users = array(ANONYMOUS, $user->data['user_id']);
+	$sql_ignore_users = array(ANONYMOUS/*, $user->data['user_id']*/);
 	while ($row = $db->sql_fetchrow($result))
 	{
 		$sql_ignore_users[] = (int) $row['ban_userid'];
 	}
 	$db->sql_freeresult($result);	
 	
-	$sql = 'SELECT u.user_guestbook_notification, u.user_guestbook_notification_enabled, u.user_id, u.username, u.user_email, u.user_lang, u.user_notify_type, u.user_jabber
+	$sql = 'SELECT u.user_gb_notification, u.user_gb_notification_enabled, u.user_id, u.username, u.user_email, u.user_lang, u.user_notify_type, u.user_jabber
 		FROM ' . USERS_TABLE . ' u
-		WHERE
-			AND ' . $db->sql_in_set('user_id', $sql_ignore_users, true) . '
+		WHERE ' . $db->sql_in_set('user_id', $sql_ignore_users, true) . '
 			AND u.user_type IN (' . USER_NORMAL . ', ' . USER_FOUNDER . ')		
 			AND user_id = ' . (int)$data['user_id'];
 		
@@ -310,7 +309,7 @@ function gb_user_notification ($data)
 	$row = $db->sql_fetchrow($result);
 	$db->sql_freeresult();
 	
-	if (!$row || !$row['user_guestbook_notification_enabled'])
+	if (!$row || !$row['user_gb_notification_enabled'])
 	{
 		return false;
 	}
@@ -321,7 +320,7 @@ function gb_user_notification ($data)
 		'mail'	=> false,
 	);
 	
-	switch ($row['user_guestbook_notification'])
+	switch ($row['user_gb_notification'])
 	{
 		case GB_NOTIFY_EMAIL:
 			if (!$config['email_enable'])
@@ -345,7 +344,7 @@ function gb_user_notification ($data)
 		case GB_NOTIFY_EMAIL_PM:
 			if ($config['email_enable'])
 			{
-				$send['email'] = true;
+				$send['mail'] = true;
 			}
 			$send['pm'] = true;
 		break;
@@ -359,7 +358,7 @@ function gb_user_notification ($data)
 		case GB_NOTIFY_ALL:		
 			if ($config['email_enable'])
 			{
-				$send['email'] = true;
+				$send['mail'] = true;
 			}
 			
 			if ($config['jab_enable'])
@@ -373,6 +372,7 @@ function gb_user_notification ($data)
 	}
 	if ($send['mail'] || $send['im'])
 	{
+		global $phpEx, $phpbb_root_path;
 		if (!class_exists('messenger'))
 		{
 			include($phpbb_root_path . 'includes/functions_messenger.' . $phpEx);
@@ -398,7 +398,7 @@ function gb_user_notification ($data)
 			'method'	=> $method,
 			'email'		=> $row['user_email'],
 			'jabber'	=> $row['user_jabber'],
-			'username'	=> $row['username'],
+			'name'		=> $row['username'],
 			'lang'		=> $row['user_lang'],
 			'user_id'	=> $row['user_id'],
 		);
@@ -410,7 +410,7 @@ function gb_user_notification ($data)
 
 		$messenger->assign_vars(array(
 			'USERNAME'		=> htmlspecialchars_decode($addr['name']),
-			'U_TOPIC'		=> generate_board_url() . "/memberlist.$phpEx?u={$data[user_id]}",
+			'U_POST'		=> generate_board_url() . "/memberlist.$phpEx?mode=priofile&u={$data['user_id']}",
 
 		));
 

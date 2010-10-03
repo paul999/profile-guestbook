@@ -1,0 +1,11 @@
+Subject: New profile guestbook post
+
+Hello {USERNAME},
+
+A new post in your guestbook has been posted at "{SITENAME}":
+
+{U_POST}
+
+If you dont want to receive emails anymore, you can change your settings in your profile.
+
+{EMAIL_SIG}
