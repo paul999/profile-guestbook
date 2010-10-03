@@ -1329,7 +1329,7 @@ class guestbook
 						'topic_title'			=> (empty($post_data['topic_title'])) ? $post_data['post_subject'] : $post_data['topic_title'],
 						'post_id'				=> (int) $post_id,
 						'icon_id'				=> (int) $post_data['icon_id'],
-						'poster_id'				=> (int) $post_data['poster_id'],
+						'poster_id'				=> (int) $user->data['user_id'],
 						'enable_sig'			=> (bool) $post_data['enable_sig'],
 						'enable_bbcode'			=> (bool) $post_data['enable_bbcode'],
 						'enable_smilies'		=> (bool) $post_data['enable_smilies'],
