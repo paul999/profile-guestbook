@@ -1022,6 +1022,7 @@ class guestbook
 			case 'quote':
 
 				$post_data['post_edit_locked'] = 0;
+				$post_data['orginal_author']   = $post_data['poster_id'];
 
 			// no break;
 
