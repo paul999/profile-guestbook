@@ -143,7 +143,7 @@ class acp_profile_guestbook
 				}
 				
 				
-				$latest_version_info = false;
+				$latest_version_info = $latest_version = false;
 				if (($latest_version_info = $this->obtain_latest_version_info(request_var('versioncheck_force', false))) === false)
 				{
 					$template->assign_var('S_VERSIONCHECK_FAIL', true);
@@ -181,7 +181,7 @@ class acp_profile_guestbook
 					'NUMBER_OF_GB'		=> $total_guestbooks,
 					'NUMBER_OF_POSTS'	=> $total_posts,
 					'CUR_VERSION'		=> $config['pg_version'],
-					'LATEST_VERSION'	=> ($latest_version_info) ? $latest_version : false,
+					'LATEST_VERSION'	=> ($latest_version_info && $latest_version) ? $latest_version : false,
 				));				
 				return;
 			break;
