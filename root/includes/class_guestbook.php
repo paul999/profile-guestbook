@@ -1349,7 +1349,8 @@ class guestbook
 					// The last parameter tells submit_post if search indexer has to be run
 					submit_gb_post($mode, $post_data['post_subject'], $post_data['username'], $data, $update_message, ($update_message || $update_subject) ? true : false);
 					
-					$redirect_url = append_sid("{$phpbb_root_path}memberlist.{$phpEx}", "mode=viewprofile&amp;gbmode=display&amp;u={$this->user_id}");
+					$uid = (($mode == 'quote' && isset($post_data['orginal_author'])) ? $post_data['orginal_author'] : $this->user_id);
+					$redirect_url = append_sid("{$phpbb_root_path}memberlist.{$phpEx}", "mode=viewprofile&amp;gbmode=display&amp;u={$uid}");
 
 					if ($config['enable_post_confirm'] && !$user->data['is_registered'] && (isset($captcha) && $captcha->is_solved() === true) && ($mode == 'post' || $mode == 'reply' || $mode == 'quote'))
 					{
