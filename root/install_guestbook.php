@@ -245,9 +245,15 @@ $versions = array(
 		),
 	),	
 	'0.1.0-dev3'	=> array(
-		'config_add' array(
+		'config_add' => array(
 			array('profile_guestbook_notification', 0),
 		),
+	),
+	'0.1.0-dev4'	=> array(
+		'table_column_add' => array(
+			array('phpbb_users', 'user_gb_notification_enabled', array('BOOL', 1)),
+			array('phpbb_users', 'user_gb_notification', array('UINT', 0)),					
+		),		
 	),
 );
 
