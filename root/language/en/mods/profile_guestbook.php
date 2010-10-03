@@ -63,5 +63,14 @@ $lang = array_merge($lang, array(
 	
 	'GUESTBOOK_REPLY'	=> 'Post a comment',
 	'POST_GUESTBOOK'	=> 'Post a guestbook comment',
+	
+	'NEW_GUESTBOOK_POST'	=> 'New guestbook post',
+	'NEW_GUESTBOOK_POST_TXT'=> 'Hello,
+
+A new post in your guestbook has been posted:
+
+%s
+
+If you dont want to receive PMs anymore, you can change your settings in your profile.',
 ));
 ?>
