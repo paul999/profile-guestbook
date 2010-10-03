@@ -131,6 +131,9 @@ class acp_profile_guestbook
 								
 								add_log('admin', 'LOG_GB_DELETE_ALL_POSTS');
 							break;
+							case 'resync':
+							
+							break;
 						
 							default:
 								trigger_error('NO_MODE');
@@ -158,7 +161,7 @@ class acp_profile_guestbook
 				
 				$template->assign_vars(array(
 					'U_VERSIONCHECK_FORCE'	=> $this->u_action . '&amp;versioncheck_force=1',		
-					'S_ACTION_OPTIONS'	=> $auth->acl_get('a_gb_settings') ? true : false, // @TODO: Decided i we want this permission	
+					'S_ACTION_OPTIONS'	=> $auth->acl_get('a_gb_settings') ? true : false, 	
 					'U_ACTION'		=> $this->u_action,	
 					'S_FOUNDER'		=> ($user->data['user_type'] == USER_FOUNDER),
 				));				

@@ -48,6 +48,7 @@ $lang = array_merge($lang, array(
 	
 	'GB_OPTIONS'		=> 'Basic guestbook actions',
 	'DELETE_ALL'		=> 'Delete <em>all</em> posts from <em>all</em> users.',
+	'RESYNC_ALL'		=> 'Resync all post counters for users.',
 
 	'VERSION_UP_TO_DATE'		=> 'Your version is uptodate.',
 	'VERSION_NOT_UP_TO_DATE_TITLE'	=> 'Your version is not uptodate. You should update as soon as possible.',
