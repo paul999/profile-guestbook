@@ -421,5 +421,37 @@ function gb_user_notification ($data)
 		$messenger->save_queue();
 	}
 	
+	if ($send['pm'])
+	{
+		global $user;
+		
+		// note that multibyte support is enabled here
+		$my_subject = $user->lang['NEW_GUESTBOOK_POST'];
+		$my_text    = $user->lang['NEW_GUESTBOOK_POST_TXT'];
+		 
+		// variables to hold the parameters for submit_pm
+		$poll = $uid = $bitfield = $options = '';
+		generate_text_for_storage($my_subject, $uid, $bitfield, $options, false, false, false);
+		generate_text_for_storage($my_text, $uid, $bitfield, $options, true, true, true);
+		 
+		$data = array(
+		    'address_list'      => array ('u' => array($data['user_id'] => 'to')),
+		    'from_user_id'      => $user->data['user_id'],
+		    'from_username'     => $user->data['username'],
+		    'icon_id'           => 0,
+		    'from_user_ip'      => $user->data['user_ip'],
+		      
+		    'enable_bbcode'     => true,
+		    'enable_smilies'    => true,
+		    'enable_urls'       => true,
+		    'enable_sig'        => true,
+		 
+		    'message'           => $my_text,
+		    'bbcode_bitfield'   => $bitfield,
+		    'bbcode_uid'        => $uid,
+		);
+		 
+		submit_pm('post', $my_subject, $data, false);	
+	}
 }
 ?>
