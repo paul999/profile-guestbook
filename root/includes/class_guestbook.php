@@ -1320,7 +1320,7 @@ class guestbook
 				if ($submit)
 				{
 					$data = array(
-						'user_id'			=> $this->user_id,
+						'user_id'			=> (int)(($mode == 'quote' && isset($post_data['orginal_author']) ? $post_data['orginal_author'] : $this->user_id),
 						'topic_title'			=> (empty($post_data['topic_title'])) ? $post_data['post_subject'] : $post_data['topic_title'],
 						'post_id'				=> (int) $post_id,
 						'icon_id'				=> (int) $post_data['icon_id'],
