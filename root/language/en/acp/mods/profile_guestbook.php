@@ -54,6 +54,10 @@ $lang = array_merge($lang, array(
 	'VERSION_NOT_UP_TO_DATE_TITLE'	=> 'Your version is not uptodate. You should update as soon as possible.',
 	'VERSIONCHECK_FAIL'		=> 'Error connecting to the server.',
 	
+	'CURRENT_VERSION'	=> 'Current version:',
+	'LATEST_VERSION'	=> 'Latest version:',
+	'NOT_AVAILABLE'		=> 'Not available',
+	
 	'NUMBER_OF_GB'		=> 'Number of users with a guestbook',
 	'NUMBER_OF_POSTS'	=> 'Number of guestbook posts',
 

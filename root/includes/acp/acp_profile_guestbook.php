@@ -159,11 +159,28 @@ class acp_profile_guestbook
 					));
 				}	
 				
+				// Select how many users have a guestbook with posts :)
+				
+				$sql = 'SELECT COUNT(DISTINCT user_id) as total FROM ' . GUESTBOOK_TABLE;
+				$result = $db->sql_query($sql);  
+				$total_guestbooks = $db->sql_fetchfield('total');
+				$db->sql_freeresult($result);
+				
+				$sql = 'SELECT COUNT(post_id) as total FROM ' . GUESTBOOK_TABLE;
+				$result = $db->sql_query($sql);  
+				$total_posts = $db->sql_fetchfield('total');
+				$db->sql_freeresult($result);
+				
 				$template->assign_vars(array(
 					'U_VERSIONCHECK_FORCE'	=> $this->u_action . '&amp;versioncheck_force=1',		
 					'S_ACTION_OPTIONS'	=> $auth->acl_get('a_gb_settings') ? true : false, 	
 					'U_ACTION'		=> $this->u_action,	
 					'S_FOUNDER'		=> ($user->data['user_type'] == USER_FOUNDER),
+					
+					'NUMBER_OF_GB'		=> $total_guestbooks,
+					'NUMBER_OF_POSTS'	=> $total_posts,
+					'CUR_VERSION'		=> $config['pg_version'],
+					'LATEST_VERSION'	=> ($latest_version_info) ? $latest_version : false,
 				));				
 				return;
 			break;
