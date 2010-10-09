@@ -24,7 +24,7 @@
 				</contributions-group>
 			</author>
 		</author-group>
-		<mod-version>0.0.3</mod-version>
+		<mod-version>0.1.0</mod-version>
 		<installation>
 			<level>easy</level>
 			<time>60</time>
@@ -48,7 +48,7 @@
 				</changelog>
 			</entry>
 			<entry>
-				<date>2010-xx-xx</date>
+				<date>2010-10-09</date>
 				<rev-version>0.1.0</rev-version>
 				<changelog lang="en">
 					<change>Bug #4: Quick reply is shown unwanted to guests.</change>
