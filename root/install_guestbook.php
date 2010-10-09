@@ -255,6 +255,7 @@ $versions = array(
 			array('phpbb_users', 'user_gb_notification', array('UINT', 0)),					
 		),		
 	),
+	'0.1.0'		=> array(),
 );
 
 // Include the UMIF Auto file and everything else will be handled automatically.
