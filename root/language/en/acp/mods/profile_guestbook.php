@@ -67,9 +67,6 @@ $lang = array_merge($lang, array(
 	'CONFIRM_GB_DELETE_ALL'	=> 'Are you sure you want to remove <em>all</em> guestbook posts from all users? <br />This cannot be undone!',
 	
 	'ERROR_NOT_HAPPEN'	=> 'This should not happen, 0 posts within post loop',
-	'GB_SYNC_DONE'		=> 'Guestbook sync done.',
-
 ));
-
 
 ?>

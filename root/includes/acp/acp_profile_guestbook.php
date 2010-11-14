@@ -224,7 +224,8 @@ class acp_profile_guestbook
 										WHERE ' . $db->sql_in_set('user_id', $data);
 									$db->sql_query($sql);
 								}
-								trigger_error('GB_SYNC_DONE');
+
+								add_log('admin', 'LOG_GB_SYNC_ALL_POSTS');
 							break;
 						
 							default:
