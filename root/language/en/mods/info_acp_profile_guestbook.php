@@ -42,6 +42,7 @@ $lang = array_merge($lang, array(
 	
 	'LOG_CONFIG_PROFILE_GUESTBOOK'	=> '<strong>Altered Profile Guestbook settings</strong>',
 	'LOG_GB_DELETE_ALL_POSTS'	=> '<strong>Deleted all Profile Guestbook posts</strong>',
+	'LOG_GB_SYNC_ALL_POSTS'		=> '<strong>Synced all Profile Guestbook posts</strong>',
 ));
 
 

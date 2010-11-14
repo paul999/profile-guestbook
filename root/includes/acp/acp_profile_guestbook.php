@@ -133,7 +133,99 @@ class acp_profile_guestbook
 								add_log('admin', 'LOG_GB_DELETE_ALL_POSTS');
 							break;
 							case 'resync':
-							
+								// First of all, select all users. We also select bots, because inactive users (Besides bots)
+								// can have a guestbook as well.
+								// This can take some time, sorry...
+								
+								$sql = 'SELECT user_id FROM ' . USERS_TABLE .  ' ORDER BY user_id';
+								$result = $db->sql_query($sql);
+								
+								$data		= array(); // This will contain the data that needs to be updated (Number of posts) with 0 posts
+								$users		= array(); // All users with a guestbook
+								
+								// Select all users who have guestbook posts.
+								$sql = 'SELECT user_id FROM ' . GUESTBOOK_TABLE . ' ORDER BY user_id';
+								$result2 = $db->sql_query($sql);
+								
+								while ($row = $db->sql_fetchrow($result2))
+								{
+									$users[] = $row['user_id'];
+								}
+								$db->sql_freeresult($result2);
+								
+								while ($row = $db->sql_fetchrow($result))
+								{
+									$uid = (int)$row['user_id'];
+									
+									if (!in_array($uid, $users)
+									{
+										// This user does not have any posts in his guestbook. 
+										$data[] = $uid;
+										// We don't need to set the other fields, 0 is a special case, and handled later with 1 query
+										// To have a bit less query count, it is already high.
+										continue; // Dont need to do any other work here now.
+									}
+									
+									// Select total posts for this user.
+									$sql = 'SELECT COUNT(guestbook_id) as total FROM ' . GUESTBOOK_TABLE . ' WHERE user_id = ' . $uid;
+									$result_loop = $db->sql_query($sql);
+									$total = (int)$db->sql_fetchfield('total');
+									
+									if ($total == 0)
+									{
+										// Something very bad happened. Die.
+										trigger_error('ERROR_NOT_HAPPEN');
+									}
+									
+									// Select first post id.
+									$sql = 'SELECT post_id FROM ' . GUESTBOOK_TABLE . ' 
+											WHERE user_id = ' . $uid . ' ORDER BY post_time ASC';
+									$result_loop = $db->sql_query_limit($sql, 1);
+									$first_id = (int)$db->sql_fetchfield('post_id');
+									$db->sql_freeresult($result_loop);		
+									
+									if ($total == 1)
+									{
+										// Dont need to select the last post id, as it is the same as the first post id.
+										$last_id = $first_id;
+									}
+									else
+									{
+										$sql = 'SELECT post_id FROM ' . GUESTBOOK_TABLE . ' 
+												WHERE user_id = ' . $uid . ' ORDER BY post_time DESC';
+										$result_loop = $db->sql_query_limit($sql, 1);
+										$last_id = (int)$db->sql_fetchfield('post_id');
+										$db->sql_freeresult($result_loop);	
+									}
+									
+									// Write queries for this user :)
+									$sql_ary = array(
+										'user_guestbook_first_post_id'	=> $first_id,
+										'user_guestbook_last_post_id'	=> $last_id,
+										'user_guestbook_posts'		=> $total,
+									);
+								
+									$sql = 'UPDATE ' . USERS_TABLE . ' SET ' . $db->sql_build_array('UPDATE', $sql_ary) . '
+											WHERE user_id = ' . $uid;
+									$db->sql_query($sql);
+								}
+								$db->sql_freeresult($result);
+								
+								// Time to update all users with 0 posts.
+								if (sizeof($data)) > 0)
+								{
+									$sql_ary = array(
+										'user_guestbook_first_post_id'	=> 0,
+										'user_guestbook_last_post_id'	=> 0,
+										'user_guestbook_posts'		=> 0,
+									);
+								
+									$sql = 'UPDATE ' . USERS_TABLE . ' SET ' . $db->sql_build_array('UPDATE', $sql_ary) . '
+										WHERE ' . $db->sql_in_set('user_id', $data);
+									$db->sql_query($sql);
+								}
+
+								add_log('admin', 'LOG_GB_SYNC_ALL_POSTS');
 							break;
 						
 							default:
