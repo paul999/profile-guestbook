@@ -61,6 +61,13 @@
 					<change>Updated UMIL to latest release.</change>
 				</changelog>
 			</entry>
+			<entry>
+				<date>2010-xx-xx</date>
+				<rev-version></rev-version>
+				<changelog lang="en">
+					<change>Bug #16: { NO_NOTIFY } showing when notification options are disabled</change>
+				</changelog>
+			</entry>
 		</history>
 	</header>
 	<action-group>

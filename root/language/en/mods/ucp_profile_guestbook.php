@@ -45,6 +45,7 @@ if (empty($lang) || !is_array($lang))
 $lang = array_merge($lang, array(
 	'ENABLE_NOTIFICATION'	=> 'Enable notification for new guestbook posts',
 	'NO_NOTIFICATION'	=> 'Notification is disabled by the board administrator',
+	'NO_NOTIFY'		=> 'Notification is disabled by the board administrator', // @TODO: Check if above lang ite is used as well.
 	
 	'NOTIFY_METHOD_PM'		=> 'PM only',
 	'NOTIFY_METHOD_EMAIL_PM'	=> 'PM and e-mail',
