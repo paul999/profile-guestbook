@@ -159,7 +159,7 @@ class acp_profile_guestbook
 								{
 									$uid = (int)$row['user_id'];
 									
-									if (!in_array($uid, $users)
+									if (!in_array($uid, $users))
 									{
 										// This user does not have any posts in his guestbook. 
 										$data[] = $uid;
@@ -169,7 +169,7 @@ class acp_profile_guestbook
 									}
 									
 									// Select total posts for this user.
-									$sql = 'SELECT COUNT(guestbook_id) as total FROM ' . GUESTBOOK_TABLE . ' WHERE user_id = ' . $uid;
+									$sql = 'SELECT COUNT(post_id) as total FROM ' . GUESTBOOK_TABLE . ' WHERE user_id = ' . $uid;
 									$result_loop = $db->sql_query($sql);
 									$total = (int)$db->sql_fetchfield('total');
 									
@@ -215,7 +215,7 @@ class acp_profile_guestbook
 								$db->sql_freeresult($result);
 								
 								// Time to update all users with 0 posts.
-								if (sizeof($data)) > 0)
+								if (sizeof($data) > 0)
 								{
 									$sql_ary = array(
 										'user_guestbook_first_post_id'	=> 0,
@@ -226,6 +226,7 @@ class acp_profile_guestbook
 									$sql = 'UPDATE ' . USERS_TABLE . ' SET ' . $db->sql_build_array('UPDATE', $sql_ary) . '
 										WHERE ' . $db->sql_in_set('user_id', $data);
 									$db->sql_query($sql);
+									var_dump($sql);
 								}
 								$db->sql_transaction('commit');
 
