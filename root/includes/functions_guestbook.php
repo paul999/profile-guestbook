@@ -165,7 +165,7 @@ function submit_gb_post($mode, $subject, $username, &$data, $update_message = tr
 		case 'reply':
 			$sql_data[GUESTBOOK_TABLE]['sql'] = array(
 				'user_id'			=> (int) $data['user_id'],
-				'poster_id'			=> (int) $user->data['user_id'],
+				'poster_id'			=> (int) ((isset($data['poster_id'])) ? $data['poster_id'] : $user->data['user_id']),
 				'icon_id'			=> $data['icon_id'],
 				'poster_ip'			=> $user->ip,
 				'post_time'			=> $current_time,
@@ -265,7 +265,7 @@ function submit_gb_post($mode, $subject, $username, &$data, $update_message = tr
 	// Send Notifications
 	if ($mode != 'edit' && $mode != 'delete')
 	{
-		//gb_user_notification($mode, $subject, $data['topic_title'], $data['forum_name'], $data['forum_id'], $data['topic_id'], $data['post_id']);
+		gb_user_notification($data);
 	}
 
 	$params = $add_anchor = '';
@@ -273,4 +273,191 @@ function submit_gb_post($mode, $subject, $username, &$data, $update_message = tr
 	return true;
 }
 
+function gb_user_notification ($data)
+{
+	global $db, $config;
+	
+	// First, make sure notifications are enabled
+	
+	if (!$config['profile_guestbook_notification'] || $data['user_id'] == ANONYMOUS)
+	{
+		return false;
+	}
+	
+	// Get banned User ID's
+	$sql = 'SELECT ban_userid
+		FROM ' . BANLIST_TABLE . '
+		WHERE ban_userid <> 0
+			AND ban_exclude <> 1';
+	$result = $db->sql_query($sql);
+
+	$sql_ignore_users = array(ANONYMOUS/*, $user->data['user_id']*/);
+	while ($row = $db->sql_fetchrow($result))
+	{
+		$sql_ignore_users[] = (int) $row['ban_userid'];
+	}
+	$db->sql_freeresult($result);	
+	
+	$sql = 'SELECT u.user_gb_notification, u.user_gb_notification_enabled, u.user_id, u.username, u.user_email, u.user_lang, u.user_notify_type, u.user_jabber
+		FROM ' . USERS_TABLE . ' u
+		WHERE ' . $db->sql_in_set('user_id', $sql_ignore_users, true) . '
+			AND u.user_type IN (' . USER_NORMAL . ', ' . USER_FOUNDER . ')		
+			AND user_id = ' . (int)$data['user_id'];
+		
+	$result = $db->sql_query($sql);
+	
+	$row = $db->sql_fetchrow($result);
+	$db->sql_freeresult();
+	
+	if (!$row || !$row['user_gb_notification_enabled'])
+	{
+		return false;
+	}
+	
+	$send = array(
+		'pm'	=> false,
+		'im'	=> false,
+		'mail'	=> false,
+	);
+	
+	switch ($row['user_gb_notification'])
+	{
+		case GB_NOTIFY_EMAIL:
+			if (!$config['email_enable'])
+			{
+				// Email disabled, and only email selected, return
+				return false;
+			}
+			$send['mail'] = true;
+		break;
+		case GB_NOTIFY_IM:
+			if (!$config['jab_enable'])
+			{
+				// IM disabled, and only IM selected, return
+				return false;
+			}
+			$send['im'] = true;
+		break;
+		case GB_NOTIFY_PM:
+			$send['pm'] = true;
+		break;
+		case GB_NOTIFY_EMAIL_PM:
+			if ($config['email_enable'])
+			{
+				$send['mail'] = true;
+			}
+			$send['pm'] = true;
+		break;
+		case GB_NOTIFY_IM_PM:
+			if ($config['jab_enable'])
+			{
+				$send['im'] = true;
+			}
+			$send['pm'] = true;		
+		break;
+		case GB_NOTIFY_ALL:		
+			if ($config['email_enable'])
+			{
+				$send['mail'] = true;
+			}
+			
+			if ($config['jab_enable'])
+			{
+				$send['im'] = true;
+			}
+			$send['pm'] = true;				
+		break;
+		default: 
+			return false;
+	}
+	if ($send['mail'] || $send['im'])
+	{
+		global $phpEx, $phpbb_root_path;
+		if (!class_exists('messenger'))
+		{
+			include($phpbb_root_path . 'includes/functions_messenger.' . $phpEx);
+		}
+		$messenger = new messenger();
+		
+		switch (true)
+		{
+			case $send['mail'] && !$send['im']:
+				$method = NOTIFY_EMAIL;
+			break;
+			
+			case !$send['mail'] && $send['im']:
+				$method = NOTIFY_IM;
+			break;
+			
+			case $send['mail'] && $send['im']:
+				$method = NOTIFY_BOTH;
+			break;
+		}
+
+		$addr = array(
+			'method'	=> $method,
+			'email'		=> $row['user_email'],
+			'jabber'	=> $row['user_jabber'],
+			'name'		=> $row['username'],
+			'lang'		=> $row['user_lang'],
+			'user_id'	=> $row['user_id'],
+		);
+
+		$messenger->template('guestbook_notification', $addr['lang']);
+
+		$messenger->to($addr['email'], $addr['name']);
+		$messenger->im($addr['jabber'], $addr['name']);
+
+		$messenger->assign_vars(array(
+			'USERNAME'		=> htmlspecialchars_decode($addr['name']),
+			'U_POST'		=> generate_board_url() . "/memberlist.$phpEx?mode=viewprofile&u={$data['user_id']}",
+
+		));
+
+		$messenger->send($addr['method']);
+
+		unset($msg_list_ary);
+
+		$messenger->save_queue();
+	}
+	
+	if ($send['pm'])
+	{
+		global $user;
+		
+		if (!function_exists('submit_pm'))
+		{
+			global $phpbb_root_path, $phpEx;
+			include("{$phpbb_root_path}includes/functions_privmsgs.$phpEx");
+		}
+		
+		// note that multibyte support is enabled here
+		$my_subject = $user->lang['NEW_GUESTBOOK_POST'];
+		$my_text    = sprintf($user->lang['NEW_GUESTBOOK_POST_TXT'], '[url]' . generate_board_url() . "/memberlist.$phpEx?mode=viewprofile&u={$data['user_id']}[/url]");
+		 
+		// variables to hold the parameters for submit_pm
+		$poll = $uid = $bitfield = $options = '';
+		generate_text_for_storage($my_subject, $uid, $bitfield, $options, false, false, false);
+		generate_text_for_storage($my_text, $uid, $bitfield, $options, true, true, true);
+		 
+		$data = array(
+		    'address_list'      => array ('u' => array($data['user_id'] => 'to')),
+		    'from_user_id'      => $user->data['user_id'],
+		    'from_username'     => $user->data['username'],
+		    'icon_id'           => 0,
+		    'from_user_ip'      => $user->data['user_ip'],
+		      
+		    'enable_bbcode'     => true,
+		    'enable_smilies'    => true,
+		    'enable_urls'       => true,
+		    'enable_sig'        => true,
+		 
+		    'message'           => $my_text,
+		    'bbcode_bitfield'   => $bitfield,
+		    'bbcode_uid'        => $uid,
+		);
+		 
+		submit_pm('post', $my_subject, $data, false);	
+	}
+}
 ?>

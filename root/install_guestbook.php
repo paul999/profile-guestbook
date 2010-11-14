@@ -232,6 +232,30 @@ $versions = array(
 			),
 		),		
 	),
+	'0.1.0-dev2'	=> array(
+		'module_add'	=> array(
+			array('ucp', '', 'UCP_CAT_PROFILE_GUESTBOOK'),
+			
+			array('ucp', 'UCP_CAT_PROFILE_GUESTBOOK', array(
+					'module_basename'		=> 'profile_guestbook',
+					'module_langname'		=> 'UCP_PROFILE_GUESTBOOK_SETTINGS',
+					'module_mode'			=> 'settings',
+				),
+			),	
+		),
+	),	
+	'0.1.0-dev3'	=> array(
+		'config_add' => array(
+			array('profile_guestbook_notification', 0),
+		),
+	),
+	'0.1.0-dev4'	=> array(
+		'table_column_add' => array(
+			array('phpbb_users', 'user_gb_notification_enabled', array('BOOL', 1)),
+			array('phpbb_users', 'user_gb_notification', array('UINT', 0)),					
+		),		
+	),
+	'0.1.0'		=> array(),
 );
 
 // Include the UMIF Auto file and everything else will be handled automatically.

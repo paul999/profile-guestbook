@@ -57,6 +57,7 @@ class acp_profile_guestbook
 					'vars'	=> array(
 						'legend1'				=> 'ACP_PROFILE_GUESTBOOK_SETTINGS',
 						'profile_guestbook_enabled'		=> array('lang' => 'PROFILE_GUESTBOOK_ENABLED',	'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => false),
+						'profile_guestbook_notification'	=> array('lang' => 'PROFILE_GUESTBOOK_NOTIFICATION', 'validate' => 'bool', 'type' => 'radio:yes_no', 'explain' => true),
 
 
 						'legend3'					=> 'ACP_SUBMIT_CHANGES',
@@ -142,7 +143,7 @@ class acp_profile_guestbook
 				}
 				
 				
-				$latest_version_info = false;
+				$latest_version_info = $latest_version = false;
 				if (($latest_version_info = $this->obtain_latest_version_info(request_var('versioncheck_force', false))) === false)
 				{
 					$template->assign_var('S_VERSIONCHECK_FAIL', true);
@@ -180,7 +181,7 @@ class acp_profile_guestbook
 					'NUMBER_OF_GB'		=> $total_guestbooks,
 					'NUMBER_OF_POSTS'	=> $total_posts,
 					'CUR_VERSION'		=> $config['pg_version'],
-					'LATEST_VERSION'	=> ($latest_version_info) ? $latest_version : false,
+					'LATEST_VERSION'	=> ($latest_version_info && $latest_version) ? $latest_version : false,
 				));				
 				return;
 			break;

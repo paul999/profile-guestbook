@@ -894,8 +894,11 @@ class guestbook
 		{
 			include($phpbb_root_path . 'includes/functions_guestbook.' . $phpEx);
 		}
-
-		include($phpbb_root_path . 'includes/message_parser.' . $phpEx);
+		
+		if (!class_exists('parse_message'))
+		{
+			include($phpbb_root_path . 'includes/message_parser.' . $phpEx);
+		}
 
 
 		$user->add_lang('posting');
@@ -1019,6 +1022,12 @@ class guestbook
 			case 'quote':
 
 				$post_data['post_edit_locked'] = 0;
+				
+				// @TODO: Decide if we want to add a config option/ucp option/checkbox for this feature.
+				if ($post_data['poster_id'] != ANONYMOUS) // Do not send it to the guests user guestbook (For obvious reasons :))
+				{
+					$post_data['orginal_author']   = $post_data['poster_id'];
+				}
 
 			// no break;
 
@@ -1161,7 +1170,6 @@ class guestbook
 		$flash_status	= ($bbcode_status && $auth->acl_get('u_gb_flash') && $config['allow_post_flash']) ? true : false;
 		$quote_status	= true;
 
-
 		if ($submit || $preview || $refresh)
 		{
 			$post_data['post_subject']		= utf8_normalize_nfc(request_var('subject', '', true));
@@ -1262,7 +1270,10 @@ class guestbook
 			// Validate username
 			if (($post_data['username'] && !$user->data['is_registered']) || ($mode == 'edit' && $post_data['poster_id'] == ANONYMOUS && $post_data['username'] && $post_data['post_username'] && $post_data['post_username'] != $post_data['username']))
 			{
-				include($phpbb_root_path . 'includes/functions_user.' . $phpEx);
+				if (!function_exists('validate_user'))
+				{
+					include($phpbb_root_path . 'includes/functions_user.' . $phpEx);
+				}
 
 				if (($result = validate_username($post_data['username'], (!empty($post_data['post_username'])) ? $post_data['post_username'] : '')) !== false)
 				{
@@ -1314,11 +1325,11 @@ class guestbook
 				if ($submit)
 				{
 					$data = array(
-						'user_id'			=> $this->user_id,
+						'user_id'			=> (int)(($mode == 'quote' && isset($post_data['orginal_author'])) ? $post_data['orginal_author'] : $this->user_id),
 						'topic_title'			=> (empty($post_data['topic_title'])) ? $post_data['post_subject'] : $post_data['topic_title'],
 						'post_id'				=> (int) $post_id,
 						'icon_id'				=> (int) $post_data['icon_id'],
-						'poster_id'				=> (int) $post_data['poster_id'],
+						'poster_id'				=> (int) $user->data['user_id'],
 						'enable_sig'			=> (bool) $post_data['enable_sig'],
 						'enable_bbcode'			=> (bool) $post_data['enable_bbcode'],
 						'enable_smilies'		=> (bool) $post_data['enable_smilies'],
@@ -1338,7 +1349,8 @@ class guestbook
 					// The last parameter tells submit_post if search indexer has to be run
 					submit_gb_post($mode, $post_data['post_subject'], $post_data['username'], $data, $update_message, ($update_message || $update_subject) ? true : false);
 					
-					$redirect_url = append_sid("{$phpbb_root_path}memberlist.{$phpEx}", "mode=viewprofile&amp;gbmode=display&amp;u={$this->user_id}");
+					$uid = (($mode == 'quote' && isset($post_data['orginal_author'])) ? $post_data['orginal_author'] : $this->user_id);
+					$redirect_url = append_sid("{$phpbb_root_path}memberlist.{$phpEx}", "mode=viewprofile&amp;gbmode=display&amp;u={$uid}");
 
 					if ($config['enable_post_confirm'] && !$user->data['is_registered'] && (isset($captcha) && $captcha->is_solved() === true) && ($mode == 'post' || $mode == 'reply' || $mode == 'quote'))
 					{
@@ -1465,12 +1477,12 @@ class guestbook
 		switch ($mode)
 		{
 			case 'post':
-				$page_title = $user->lang['POST_TOPIC'];
+				$page_title = $user->lang['POST_GUESTBOOK'];
 			break;
 
 			case 'quote':
 			case 'reply':
-				$page_title = $user->lang['POST_REPLY'];
+				$page_title = $user->lang['POST_GUESTBOOK'];
 			break;
 
 			case 'delete':
@@ -1555,6 +1567,7 @@ class guestbook
 			'S_BBCODE_URL'			=> $url_status,
 			'S_BBCODE_FLASH'		=> $flash_status,
 			'S_BBCODE_QUOTE'		=> $quote_status,
+			'SIGNATURE'			=> '',
 
 			'S_POST_ACTION'			=> $s_action,
 			'S_HIDDEN_FIELDS'		=> $s_hidden_fields)
