@@ -153,6 +153,8 @@ class acp_profile_guestbook
 								}
 								$db->sql_freeresult($result2);
 								
+								$db->sql_transaction('begin');
+								
 								while ($row = $db->sql_fetchrow($result))
 								{
 									$uid = (int)$row['user_id'];
@@ -174,6 +176,7 @@ class acp_profile_guestbook
 									if ($total == 0)
 									{
 										// Something very bad happened. Die.
+										$db->sql_transaction('rollback');
 										trigger_error('ERROR_NOT_HAPPEN');
 									}
 									
@@ -224,6 +227,7 @@ class acp_profile_guestbook
 										WHERE ' . $db->sql_in_set('user_id', $data);
 									$db->sql_query($sql);
 								}
+								$db->sql_transaction('commit');
 
 								add_log('admin', 'LOG_GB_SYNC_ALL_POSTS');
 							break;
