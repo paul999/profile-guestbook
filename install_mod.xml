@@ -24,7 +24,7 @@
 				</contributions-group>
 			</author>
 		</author-group>
-		<mod-version>0.1.0</mod-version>
+		<mod-version>0.1.1</mod-version>
 		<installation>
 			<level>easy</level>
 			<time>60</time>
@@ -62,8 +62,8 @@
 				</changelog>
 			</entry>
 			<entry>
-				<date>2010-xx-xx</date>
-				<rev-version></rev-version>
+				<date>2010-11-21</date>
+				<rev-version>0.1.1</rev-version>
 				<changelog lang="en">
 					<change>Bug #16: { NO_NOTIFY } showing when notification options are disabled</change>
 					<change>Bug #17: Clicking on " Resync all post counters for users. " in ACP, results in a 404 error</change>
