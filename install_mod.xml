@@ -76,7 +76,7 @@
 				<date>2010-11-xx</date>
 				<rev-version>1.0.0-RC1</rev-version>
 				<changelog lang="en">
-					
+					<change>Bug #23: Warn user button generates general error</change>
 				</changelog>
 			</entry>
 		</history>
