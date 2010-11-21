@@ -254,7 +254,7 @@ class guestbook
 
 				if ($sort_dir == $check_sort)
 				{
-					$gb_data['prev_posts'] = $this->member['guestbook_posts'];
+					$gb_data['prev_posts'] = $this->member['user_guestbook_posts'];
 				}
 				else
 				{
@@ -1348,9 +1348,10 @@ class guestbook
 
 					// The last parameter tells submit_post if search indexer has to be run
 					submit_gb_post($mode, $post_data['post_subject'], $post_data['username'], $data, $update_message, ($update_message || $update_subject) ? true : false);
+					$post_id = $data['post_id'];
 					
 					$uid = (($mode == 'quote' && isset($post_data['orginal_author'])) ? $post_data['orginal_author'] : $this->user_id);
-					$redirect_url = append_sid("{$phpbb_root_path}memberlist.{$phpEx}", "mode=viewprofile&amp;gbmode=display&amp;u={$uid}");
+					$redirect_url = append_sid("{$phpbb_root_path}memberlist.{$phpEx}", "mode=viewprofile&amp;gbmode=display&amp;u={$uid}&amp;p=$post_id#p$post_id");
 
 					if ($config['enable_post_confirm'] && !$user->data['is_registered'] && (isset($captcha) && $captcha->is_solved() === true) && ($mode == 'post' || $mode == 'reply' || $mode == 'quote'))
 					{
