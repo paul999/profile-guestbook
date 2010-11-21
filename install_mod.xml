@@ -67,6 +67,7 @@
 				<changelog lang="en">
 					<change>Bug #16: { NO_NOTIFY } showing when notification options are disabled</change>
 					<change>Bug #17: Clicking on " Resync all post counters for users. " in ACP, results in a 404 error</change>
+					<change>Bug #22: MOD only works with phpbb_ as prefix</change>
 					<change>Resync post counters was not working at all</change>
 					<change>MOD tested with 3.0.8</change>
 				</changelog>

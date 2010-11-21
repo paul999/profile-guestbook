@@ -15,7 +15,7 @@ if (!defined('IN_PHPBB'))
 {
 	exit;
 }
-define ('GUESTBOOK_TABLE', 'phpbb_guestbook');
+define ('GUESTBOOK_TABLE', $table_prefix . 'guestbook');
 
 // Constants for notification				
 define('GB_NOTIFY_EMAIL'	, 0);
