@@ -72,6 +72,13 @@
 					<change>MOD tested with 3.0.8</change>
 				</changelog>
 			</entry>
+			<entry>
+				<date>2010-11-xx</date>
+				<rev-version>1.0.0-RC1</rev-version>
+				<changelog lang="en">
+					
+				</changelog>
+			</entry>
 		</history>
 	</header>
 	<action-group>
