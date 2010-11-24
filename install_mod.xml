@@ -78,6 +78,9 @@
 				<changelog lang="en">
 					<change>Bug #23: Warn user button generates general error</change>
 					<change>Bug #24: Signature is missing within guestbook</change>
+					<change>Bug #25: New post should redirect to the post instead of to the profile</change>
+					<change>Bug #26: Notification message should link to the post directly</change>
+					<change>Bug #28: General Error when viewing profile</change>
 				</changelog>
 			</entry>
 		</history>
