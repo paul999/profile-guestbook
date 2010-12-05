@@ -73,7 +73,7 @@
 				</changelog>
 			</entry>
 			<entry>
-				<date>2010-11-xx</date>
+				<date>2010-12-05</date>
 				<rev-version>1.0.0-RC1</rev-version>
 				<changelog lang="en">
 					<change>Bug #23: Warn user button generates general error</change>
