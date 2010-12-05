@@ -410,7 +410,7 @@ function gb_user_notification ($data)
 
 		$messenger->assign_vars(array(
 			'USERNAME'		=> htmlspecialchars_decode($addr['name']),
-			'U_POST'		=> generate_board_url() . "/memberlist.$phpEx?mode=viewprofile&u={$data['user_id']}",
+			'U_POST'		=> generate_board_url() . "/memberlist.$phpEx?mode=viewprofile&u={$data['user_id']}&p={$data['post_id']}#p{$data['post_id']}",
 
 		));
 
@@ -433,7 +433,7 @@ function gb_user_notification ($data)
 		
 		// note that multibyte support is enabled here
 		$my_subject = $user->lang['NEW_GUESTBOOK_POST'];
-		$my_text    = sprintf($user->lang['NEW_GUESTBOOK_POST_TXT'], '[url]' . generate_board_url() . "/memberlist.$phpEx?mode=viewprofile&u={$data['user_id']}[/url]");
+		$my_text    = sprintf($user->lang['NEW_GUESTBOOK_POST_TXT'], '[url]' . generate_board_url() . "/memberlist.$phpEx?mode=viewprofile&u={$data['user_id']}&p={$data['post_id']}#p{$data['post_id']}[/url]");
 		 
 		// variables to hold the parameters for submit_pm
 		$poll = $uid = $bitfield = $options = '';

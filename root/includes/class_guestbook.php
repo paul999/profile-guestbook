@@ -254,7 +254,7 @@ class guestbook
 
 				if ($sort_dir == $check_sort)
 				{
-					$gb_data['prev_posts'] = $this->member['guestbook_posts'];
+					$gb_data['prev_posts'] = $this->member['user_guestbook_posts'];
 				}
 				else
 				{
@@ -844,7 +844,7 @@ class guestbook
 				'U_NEXT_POST_ID'	=> ($i < $i_total && isset($rowset[$post_list[$i + 1]])) ? $rowset[$post_list[$i + 1]]['post_id'] : '',
 				'U_PREV_POST_ID'	=> $prev_post_id,
 				'U_NOTES'			=> ($auth->acl_getf_global('m_')) ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=notes&amp;mode=user_notes&amp;u=' . $poster_id, true, $user->session_id) : '',
-				'U_WARN'			=> ($auth->acl_get('m_warn') && $poster_id != $user->data['user_id'] && $poster_id != ANONYMOUS) ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=warn&amp;mode=warn_post', true, $user->session_id) : '',
+				'U_WARN'			=> ($auth->acl_get('m_warn') && $poster_id != $user->data['user_id'] && $poster_id != ANONYMOUS) ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=warn&amp;mode=warn_user&amp;u=' . $poster_id, true, $user->session_id) : '',
 
 				'POST_ID'			=> $row['post_id'],
 				'POSTER_ID'			=> $poster_id,
@@ -1186,7 +1186,7 @@ class guestbook
 			$post_data['enable_bbcode']		= (!$bbcode_status || isset($_POST['disable_bbcode'])) ? false : true;
 			$post_data['enable_smilies']	= (!$smilies_status || isset($_POST['disable_smilies'])) ? false : true;
 			$post_data['enable_urls']		= (isset($_POST['disable_magic_url'])) ? 0 : 1;
-			$post_data['enable_sig']		= (!$config['allow_sig'] || !$auth->acl_get('f_sigs') || !$auth->acl_get('u_gb_sig')) ? false : ((isset($_POST['attach_sig']) && $user->data['is_registered']) ? true : false);
+			$post_data['enable_sig']		= (!$config['allow_sig'] || !$auth->acl_get('u_gb_sig')) ? false : ((isset($_POST['attach_sig']) && $user->data['is_registered']) ? true : false);
 
 			if ($config['allow_topic_notify'] && $user->data['is_registered'])
 			{
@@ -1348,9 +1348,10 @@ class guestbook
 
 					// The last parameter tells submit_post if search indexer has to be run
 					submit_gb_post($mode, $post_data['post_subject'], $post_data['username'], $data, $update_message, ($update_message || $update_subject) ? true : false);
+					$post_id = $data['post_id'];
 					
 					$uid = (($mode == 'quote' && isset($post_data['orginal_author'])) ? $post_data['orginal_author'] : $this->user_id);
-					$redirect_url = append_sid("{$phpbb_root_path}memberlist.{$phpEx}", "mode=viewprofile&amp;gbmode=display&amp;u={$uid}");
+					$redirect_url = append_sid("{$phpbb_root_path}memberlist.{$phpEx}", "mode=viewprofile&amp;gbmode=display&amp;u={$uid}&amp;p=$post_id#p$post_id");
 
 					if ($config['enable_post_confirm'] && !$user->data['is_registered'] && (isset($captcha) && $captcha->is_solved() === true) && ($mode == 'post' || $mode == 'reply' || $mode == 'quote'))
 					{

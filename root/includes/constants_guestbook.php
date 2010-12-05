@@ -15,6 +15,8 @@ if (!defined('IN_PHPBB'))
 {
 	exit;
 }
+
+global $table_prefix; // Need to make sure $table_prefix exists.
 define ('GUESTBOOK_TABLE', $table_prefix . 'guestbook');
 
 // Constants for notification				
