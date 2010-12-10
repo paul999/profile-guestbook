@@ -24,7 +24,7 @@
 				</contributions-group>
 			</author>
 		</author-group>
-		<mod-version>1.0.0-RC1</mod-version>
+		<mod-version>1.0.0-RC2</mod-version>
 		<installation>
 			<level>easy</level>
 			<time>60</time>
@@ -81,6 +81,12 @@
 					<change>Bug #25: New post should redirect to the post instead of to the profile</change>
 					<change>Bug #26: Notification message should link to the post directly</change>
 					<change>Bug #28: General Error when viewing profile</change>
+				</changelog>
+			</entry>
+			<entry>
+				<date>2010-12-xx</date>
+				<rev-version>1.0.0-RC2</rev-version>
+				<changelog lang="en">
 				</changelog>
 			</entry>
 		</history>
