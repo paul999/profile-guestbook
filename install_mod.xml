@@ -87,6 +87,7 @@
 				<date>2010-12-xx</date>
 				<rev-version>1.0.0-RC2</rev-version>
 				<changelog lang="en">
+					<entry>Bug #30: undefined index in functions_guestbook.php</entry>
 				</changelog>
 			</entry>
 		</history>
