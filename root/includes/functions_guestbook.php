@@ -107,7 +107,7 @@ function handle_gb_post_delete($post_id, &$post_data, &$guestbook)
 	}
 
 	// If we are here the user is not able to delete - present the correct error message
-	if ($post_data['poster_id'] != $user->data['user_id'] && $auth->acl_get('u_gb_delete', $forum_id))
+	if ($post_data['poster_id'] != $user->data['user_id'] && $auth->acl_get('u_gb_delete'))
 	{
 		trigger_error('DELETE_OWN_POSTS');
 	}
@@ -187,16 +187,6 @@ function submit_gb_post($mode, $subject, $username, &$data, $update_message = tr
 
 		case 'edit_last_post':
 		case 'edit_topic':
-
-
-			// If the person editing this post is different to the one having posted then we will add a log entry stating the edit
-			// Could be simplified by only adding to the log if the edit is not tracked - but this may confuse admins/mods
-			if ($user->data['user_id'] != $poster_id)
-			{
-				$log_subject = ($GUESTBOOKsubject) ? $subject : $data['topic_title'];
-				add_log('mod', $data['forum_id'], $data['topic_id'], 'LOG_POST_EDITED', $log_subject, (!empty($username)) ? $username : $user->lang['GUEST']);
-			}
-
 			if (!isset($sql_data[GUESTBOOK_TABLE]['sql']))
 			{
 				$sql_data[GUESTBOOK_TABLE]['sql'] = array();
