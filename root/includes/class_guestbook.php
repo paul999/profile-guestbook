@@ -134,27 +134,25 @@ class guestbook
 		
 		$hilit_words	= request_var('hilit', '', true);
 
-
-
 		$template->assign_vars(array(
-			'QUOTE_IMG' 			=> $user->img('icon_post_quote', 'REPLY_WITH_QUOTE'),
+			'QUOTE_IMG' 		=> $user->img('icon_post_quote', 'REPLY_WITH_QUOTE'),
 			'REPLY_IMG'			=> $user->img('button_topic_reply', 'REPLY_TO_GUESTBOOK'),
 			'EDIT_IMG' 			=> $user->img('icon_post_edit', 'EDIT_POST'),
-			'DELETE_IMG' 			=> $user->img('icon_post_delete', 'DELETE_POST'),
+			'DELETE_IMG' 		=> $user->img('icon_post_delete', 'DELETE_POST'),
 			'INFO_IMG' 			=> $user->img('icon_post_info', 'VIEW_INFO'),
-			'PROFILE_IMG'			=> $user->img('icon_user_profile', 'READ_PROFILE'),
-			'SEARCH_IMG' 			=> $user->img('icon_user_search', 'SEARCH_USER_POSTS'),
+			'PROFILE_IMG'		=> $user->img('icon_user_profile', 'READ_PROFILE'),
+			'SEARCH_IMG' 		=> $user->img('icon_user_search', 'SEARCH_USER_POSTS'),
 			'PM_IMG' 			=> $user->img('icon_contact_pm', 'SEND_PRIVATE_MESSAGE'),
-			'EMAIL_IMG' 			=> $user->img('icon_contact_email', 'SEND_EMAIL'),
+			'EMAIL_IMG' 		=> $user->img('icon_contact_email', 'SEND_EMAIL'),
 			'WWW_IMG' 			=> $user->img('icon_contact_www', 'VISIT_WEBSITE'),
 			'ICQ_IMG' 			=> $user->img('icon_contact_icq', 'ICQ'),
 			'AIM_IMG' 			=> $user->img('icon_contact_aim', 'AIM'),
 			'MSN_IMG' 			=> $user->img('icon_contact_msnm', 'MSNM'),
 			'YIM_IMG' 			=> $user->img('icon_contact_yahoo', 'YIM'),
-			'JABBER_IMG'			=> $user->img('icon_contact_jabber', 'JABBER') ,
-			'REPORT_IMG'			=> $user->img('icon_post_report', 'REPORT_POST'),
-			'REPORTED_IMG'			=> $user->img('icon_topic_reported', 'POST_REPORTED'),
-			'UNAPPROVED_IMG'		=> $user->img('icon_topic_unapproved', 'POST_UNAPPROVED'),
+			'JABBER_IMG'		=> $user->img('icon_contact_jabber', 'JABBER') ,
+			'REPORT_IMG'		=> $user->img('icon_post_report', 'REPORT_POST'),
+			'REPORTED_IMG'		=> $user->img('icon_topic_reported', 'POST_REPORTED'),
+			'UNAPPROVED_IMG'	=> $user->img('icon_topic_unapproved', 'POST_UNAPPROVED'),
 			'WARN_IMG'			=> $user->img('icon_user_warn', 'WARN_USER'),
 
 			'S_IS_LOCKED'			=> false,
@@ -214,10 +212,10 @@ class guestbook
 			'FROM'		=> array(GUESTBOOK_TABLE => 'g'),
 		);
 
-		$sql_array['WHERE'] = 'g.user_id = ' . $this->user_id;
+		$sql_array['WHERE'] = 'g.user_id = ' . (int)$this->user_id;
 		if ($post_id)
 		{
-			$sql_array['WHERE'] .= " AND g.post_id = $post_id";
+			$sql_array['WHERE'] .= ' AND g.post_id = ' . (int)$post_id;
 		}
 
 		$sql = $db->sql_build_query('SELECT', $sql_array);
@@ -264,10 +262,10 @@ class guestbook
 			else
 			{
 				$sql = 'SELECT COUNT(p1.post_id) AS prev_posts
-					FROM ' . GUESTBOOK_TABLE . ' p1, ' . GUESTBOOK_TABLE . " p2
-					WHERE p1.user_id = {$this->user_id}
-						AND p2.post_id = {$post_id}
-						AND " . (($sort_dir == 'd') ? 'p1.post_time >= p2.post_time' : 'p1.post_time <= p2.post_time');
+					FROM ' . GUESTBOOK_TABLE . ' p1, ' . GUESTBOOK_TABLE . ' p2
+					WHERE p1.user_id = ' . (int)$this->user_id . '
+						AND p2.post_id = ' . (int)$post_id . '
+						AND ' . (($sort_dir == 'd') ? 'p1.post_time >= p2.post_time' : 'p1.post_time <= p2.post_time');
 
 				$result = $db->sql_query($sql);
 				$row = $db->sql_fetchrow($result);
@@ -304,14 +302,14 @@ class guestbook
 			$min_post_time = time() - ($sort_days * 86400);
 
 			$sql = 'SELECT COUNT(post_id) AS num_posts
-				FROM ' . GUESTBOOK_TABLE . "
-				WHERE user_id = {$this->user_id}
-					AND post_time >= $min_post_time";
+				FROM ' . GUESTBOOK_TABLE . '
+				WHERE user_id = ' . (int)$this->user_id . '
+					AND post_time >=  ' . (int)$min_post_time;
 			$result = $db->sql_query($sql);
 			$total_posts = (int) $db->sql_fetchfield('num_posts');
 			$db->sql_freeresult($result);
 
-			$limit_posts_time = "AND g.post_time >= $min_post_time ";
+			$limit_posts_time = 'AND g.post_time >= ' . (int)$min_post_time . ' ';
 
 			if (isset($_POST['sort']))
 			{
@@ -358,17 +356,10 @@ class guestbook
 
 		// This is only used for print view so ...
 		$server_path = (!$view) ? $phpbb_root_path : generate_board_url() . '/';
-/**
-
-
-**/		
 	
 		// If we've got a hightlight set pass it on to pagination.
 		$pagination = generate_pagination(append_sid("{$phpbb_root_path}memberlist.$phpEx", "u={$this->user_id}&amp;gbmode=display&amp;mode=viewprofile"), $total_posts, $config['posts_per_page'], $start);
 
-/**
-
-**/		
 		// Send vars to template
 		$template->assign_vars(array(
 			'PAGINATION' 	=> $pagination,
@@ -379,8 +370,6 @@ class guestbook
 			'S_SELECT_SORT_KEY' 	=> $s_sort_key,
 			'S_SELECT_SORT_DAYS' 	=> $s_limit_days,			
 		));
-
-
 
 		// If the user is trying to reach the second half of the guestbook, fetch it starting from the end
 		$store_reverse = false;
@@ -424,9 +413,9 @@ class guestbook
 
 		// Go ahead and pull all data for this topic
 		$sql = 'SELECT g.post_id
-			FROM ' . GUESTBOOK_TABLE . ' g' . (($join_user_sql[$sort_key]) ? ', ' . USERS_TABLE . ' u': '') . "
-			WHERE g.user_id = {$this->user_id}
-				" . (($join_user_sql[$sort_key]) ? 'AND u.user_id = g.poster_id': '') . "
+			FROM ' . GUESTBOOK_TABLE . ' g' . (($join_user_sql[$sort_key]) ? ', ' . USERS_TABLE . ' u': '') . '
+			WHERE g.user_id = ' . (int)$this->user_id . '
+				' . (($join_user_sql[$sort_key]) ? 'AND u.user_id = g.poster_id': '') . "
 				$limit_posts_time
 			ORDER BY $sql_sort_order";
 		$result = $db->sql_query_limit($sql, $sql_limit, $sql_start);
@@ -465,7 +454,7 @@ class guestbook
 			'LEFT_JOIN'	=> array(
 				array(
 					'FROM'	=> array(ZEBRA_TABLE => 'z'),
-					'ON'	=> 'z.user_id = ' . $user->data['user_id'] . ' AND z.zebra_id = g.poster_id'
+					'ON'	=> 'z.user_id = ' . (int)$user->data['user_id'] . ' AND z.zebra_id = g.poster_id'
 				)
 			),
 
@@ -917,7 +906,7 @@ class guestbook
 		$current_time = time();
 
 		// Was cancel pressed? If so then redirect to the appropriate page
-		if (/*$cancel || */($current_time - $lastclick < 2 && $submit))
+		if (($current_time - $lastclick < 2 && $submit))
 		{
 		
 			$redirect = append_sid("{$phpbb_root_path}memberlist.$phpEx", "mode=viewprofile&amp;u={$this->user_id}&amp;gbmode=display&amp;{$post_id}#p{$post_id}");
@@ -1549,7 +1538,6 @@ class guestbook
 			'S_EDIT_REASON'				=> false,
 			'S_DISPLAY_USERNAME'		=> (!$user->data['is_registered'] || ($mode == 'edit' && $post_data['poster_id'] == ANONYMOUS)) ? true : false,
 			'S_SHOW_TOPIC_ICONS'		=> $s_topic_icons,
-//			'S_DELETE_ALLOWED'			=> ($mode == 'edit' && (($post_id == $post_data['topic_last_post_id'] && $post_data['poster_id'] == $user->data['user_id'] && $auth->acl_get('f_delete', $forum_id) && !$post_data['post_edit_locked'] && ($post_data['post_time'] > time() - ($config['delete_time'] * 60) || !$config['delete_time'])) || $auth->acl_get('m_delete', $forum_id))) ? true : false,
 			'S_BBCODE_ALLOWED'			=> $bbcode_status,
 			'S_BBCODE_CHECKED'			=> ($bbcode_checked) ? ' checked="checked"' : '',
 			'S_SMILIES_ALLOWED'			=> $smilies_status,
@@ -1589,4 +1577,4 @@ class guestbook
 		return $this->member;
 	}
 }
-?>
+

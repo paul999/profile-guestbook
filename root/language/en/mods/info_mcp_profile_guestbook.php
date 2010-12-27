@@ -42,4 +42,4 @@ if (empty($lang) || !is_array($lang))
 $lang = array_merge($lang, array(
 	'LOG_GB_DELETE_POST'	=> '<strong>Profile guestbook post deleted</strong><br />» %s',
 ));
-?>
+

@@ -32,32 +32,32 @@ function gb_delete_post($post_id, &$data, &$guestbook)
 				user_guestbook_posts = 0, 
 				user_guestbook_first_post_id = 0, 
 				user_guestbook_last_post_id = 0
-			 WHERE user_id = ' . $member['user_id'];
+			 WHERE user_id = ' . (int)$member['user_id'];
 	}
 	else if ($member['user_guestbook_first_post_id'] == $post_id)
 	{
 		// New first post
-		$sql = 'SELECT post_id FROM ' . GUESTBOOK_TABLE . ' WHERE user_id = ' . $member['user_id'] . ' ORDER BY post_time ASC';
+		$sql = 'SELECT post_id FROM ' . GUESTBOOK_TABLE . ' WHERE user_id = ' . (int)$member['user_id'] . ' ORDER BY post_time ASC';
 		$result = $db->sql_query_limit($sql, 1);
 		$post_id2 = (int)$db->sql_fetchfield('post_id');
 		$db->sql_freeresult($result);
 		
-		$sql = 'UPDATE ' . USERS_TABLE . ' SET user_guestbook_posts = user_guestbook_posts -1, user_guestbook_first_post_id = ' . $post_id2 . ' WHERE user_id = ' . $member['user_id'];
+		$sql = 'UPDATE ' . USERS_TABLE . ' SET user_guestbook_posts = user_guestbook_posts -1, user_guestbook_first_post_id = ' . (int)$post_id2 . ' WHERE user_id = ' . (int)$member['user_id'];
 	}
 	else if ($member['user_guestbook_last_post_id'] == $post_id)
 	{
 		// New last post
-		$sql = 'SELECT post_id FROM ' . GUESTBOOK_TABLE . ' WHERE user_id = ' . $member['user_id'] . ' ORDER BY post_time DESC';
+		$sql = 'SELECT post_id FROM ' . GUESTBOOK_TABLE . ' WHERE user_id = ' . (int)$member['user_id'] . ' ORDER BY post_time DESC';
 		$result = $db->sql_query_limit($sql, 1);
 		$post_id2 = (int)$db->sql_fetchfield('post_id');
-		$db->sql_freeresult($result);		
+		$db->sql_freeresult($result);
 		
-		$sql = 'UPDATE ' . USERS_TABLE . ' SET user_guestbook_posts = user_guestbook_posts -1, user_guestbook_last_post_id = ' . $post_id2 . ' WHERE user_id = ' . $member['user_id'];		
+		$sql = 'UPDATE ' . USERS_TABLE . ' SET user_guestbook_posts = user_guestbook_posts -1, user_guestbook_last_post_id = ' . (int)$post_id2 . ' WHERE user_id = ' . (int)$member['user_id'];
 	}
 	else
 	{
 		// Enough posts in guestbook, don't need to update last post, just decrement counters.
-		$sql = 'UPDATE ' . USERS_TABLE . ' SET user_guestbook_posts = user_guestbook_posts -1 WHERE user_id = ' . $member['user_id'];
+		$sql = 'UPDATE ' . USERS_TABLE . ' SET user_guestbook_posts = user_guestbook_posts -1 WHERE user_id = ' . (int)$member['user_id'];
 	}
 	$db->sql_query($sql);
 }
@@ -107,7 +107,7 @@ function handle_gb_post_delete($post_id, &$post_data, &$guestbook)
 	}
 
 	// If we are here the user is not able to delete - present the correct error message
-	if ($post_data['poster_id'] != $user->data['user_id'] && $auth->acl_get('u_gb_delete', $forum_id))
+	if ($post_data['poster_id'] != $user->data['user_id'] && $auth->acl_get('u_gb_delete'))
 	{
 		trigger_error('DELETE_OWN_POSTS');
 	}
@@ -187,16 +187,6 @@ function submit_gb_post($mode, $subject, $username, &$data, $update_message = tr
 
 		case 'edit_last_post':
 		case 'edit_topic':
-
-
-			// If the person editing this post is different to the one having posted then we will add a log entry stating the edit
-			// Could be simplified by only adding to the log if the edit is not tracked - but this may confuse admins/mods
-			if ($user->data['user_id'] != $poster_id)
-			{
-				$log_subject = ($GUESTBOOKsubject) ? $subject : $data['topic_title'];
-				add_log('mod', $data['forum_id'], $data['topic_id'], 'LOG_POST_EDITED', $log_subject, (!empty($username)) ? $username : $user->lang['GUEST']);
-			}
-
 			if (!isset($sql_data[GUESTBOOK_TABLE]['sql']))
 			{
 				$sql_data[GUESTBOOK_TABLE]['sql'] = array();
@@ -240,22 +230,21 @@ function submit_gb_post($mode, $subject, $username, &$data, $update_message = tr
 		$first = '';
 		if ($mb['user_guestbook_posts'] == 0)
 		{
-			$first .= ', user_guestbook_first_post_id = ' . $data['post_id'];
+			$first .= ', user_guestbook_first_post_id = ' . (int)$data['post_id'];
 		}
 		
-		$sql = 'UPDATE ' . USERS_TABLE . ' SET user_guestbook_posts = user_guestbook_posts + 1, user_guestbook_last_post_id = ' . $data['post_id'] . $first . '  WHERE user_id = ' . $data['user_id'];
+		$sql = 'UPDATE ' . USERS_TABLE . ' SET user_guestbook_posts = user_guestbook_posts + 1, user_guestbook_last_post_id = ' . (int)$data['post_id'] . $first . '  WHERE user_id = ' . (int)$data['user_id'];
 		$db->sql_query($sql);
 	}
 
 	$make_global = false;
-
 
 	// Update the posts table
 	if (isset($sql_data[GUESTBOOK_TABLE]['sql'])) 
 	{
 		$sql = 'UPDATE ' . GUESTBOOK_TABLE . '
 			SET ' . $db->sql_build_array('UPDATE', $sql_data[GUESTBOOK_TABLE]['sql']) . '
-			WHERE post_id = ' . $data['post_id'];
+			WHERE post_id = ' . (int)$data['post_id'];
 		$db->sql_query($sql);
 	}
 
@@ -277,8 +266,7 @@ function gb_user_notification ($data)
 {
 	global $db, $config;
 	
-	// First, make sure notifications are enabled
-	
+	// First, make sure notifications are enabled	
 	if (!$config['profile_guestbook_notification'] || $data['user_id'] == ANONYMOUS)
 	{
 		return false;
@@ -460,4 +448,4 @@ function gb_user_notification ($data)
 		submit_pm('post', $my_subject, $data, false);	
 	}
 }
-?>
+

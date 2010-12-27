@@ -259,6 +259,8 @@ $versions = array(
 	'0.1.1'		=> array(),
 	'1.0.0-rc1-dev'	=> array(),
 	'1.0.0-rc1'	=> array(),
+	'1.0.0-rc2-dev'	=> array(),
+	'1.0.0-rc2'	=> array(),
 );
 
 // Include the UMIF Auto file and everything else will be handled automatically.
