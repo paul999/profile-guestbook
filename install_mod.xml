@@ -24,7 +24,7 @@
 				</contributions-group>
 			</author>
 		</author-group>
-		<mod-version>1.0.0-RC2</mod-version>
+		<mod-version>1.0.0</mod-version>
 		<installation>
 			<level>easy</level>
 			<time>60</time>
@@ -90,6 +90,13 @@
 					<entry>Bug #30: undefined index in functions_guestbook.php</entry>
 					<entry>Minor code style changes</entry>
 					<entry>Upgraded UMIL to 1.0.4</entry>
+				</changelog>
+			</entry>
+			<entry>
+				<date>2010-12-xx</date>
+				<rev-version>1.0.0</rev-version>
+				<changelog lang="en">
+					<entry>No changes since RC2.</entry>
 				</changelog>
 			</entry>
 		</history>
