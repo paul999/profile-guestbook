@@ -26,4 +26,4 @@ define('GB_NOTIFY_PM'		, 2);
 define('GB_NOTIFY_EMAIL_PM'	, 3);
 define('GB_NOTIFY_IM_PM'	, 4);
 define('GB_NOTIFY_ALL'		, 5);
-?>
+

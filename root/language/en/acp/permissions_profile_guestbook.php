@@ -88,5 +88,3 @@ $lang = array_merge($lang, array(
 	'acl_a_gb_settings'	=> array('lang' => 'Can modify profile guestbook settings', 'cat' => 'pg'),
 ));
 
-
-?>

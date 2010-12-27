@@ -50,7 +50,7 @@ class ucp_profile_guestbook
 		{
 			$data = array(
 				'notifymethod'	=> request_var('notifymethod', (int)$user->data['user_gb_notification']),
-				'notify'	=> request_var('enable_notification', (int)$user->data['user_gb_notification_enabled']),
+				'notify'		=> request_var('enable_notification', (int)$user->data['user_gb_notification_enabled']),
 			);	
 				
 			if (!check_form_key('ucp_pg'))
@@ -67,7 +67,7 @@ class ucp_profile_guestbook
 
 				$sql = 'UPDATE ' . USERS_TABLE . '
 					SET ' . $db->sql_build_array('UPDATE', $sql_ary) . '
-					WHERE user_id = ' . $user->data['user_id'];
+					WHERE user_id = ' . (int)$user->data['user_id'];
 				$db->sql_query($sql);
 
 				meta_refresh(3, $this->u_action);
@@ -81,7 +81,7 @@ class ucp_profile_guestbook
 				
 		
 		$template->assign_vars(array(
-			'L_TITLE'		=> $user->lang['UCP_PROFILE_GUESTBOOK_SETTINGS'],
+			'L_TITLE'			=> $user->lang['UCP_PROFILE_GUESTBOOK_SETTINGS'],
 			'S_SELECT_NOTIFY'	=> ($config['profile_guestbook_notification']) ? true : false,
 			'S_NOTIFY_EMAIL'	=> ($user->data['user_gb_notification'] == GB_NOTIFY_EMAIL) ? true : false,
 			'S_NOTIFY_IM'		=> ($user->data['user_gb_notification'] == GB_NOTIFY_IM) ? true : false,
@@ -97,4 +97,3 @@ class ucp_profile_guestbook
 	}	
 }
 
-?>

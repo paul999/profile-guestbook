@@ -73,4 +73,4 @@ A new post in your guestbook has been posted:
 
 If you dont want to receive PMs anymore, you can change your settings in your profile.',
 ));
-?>
+

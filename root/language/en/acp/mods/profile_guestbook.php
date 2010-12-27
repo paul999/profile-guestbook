@@ -69,4 +69,3 @@ $lang = array_merge($lang, array(
 	'ERROR_NOT_HAPPEN'	=> 'This should not happen, 0 posts within post loop',
 ));
 
-?>

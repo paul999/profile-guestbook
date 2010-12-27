@@ -36,7 +36,6 @@ function hook_profile_guestbook(&$hook)
 	define('HOOK_RUNNED', true);
 	
 	global $phpbb_root_path, $phpEx;
-
 	
 	if (!class_exists('guestbook'))
 	{

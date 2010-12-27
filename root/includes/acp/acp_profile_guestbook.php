@@ -59,7 +59,6 @@ class acp_profile_guestbook
 						'profile_guestbook_enabled'		=> array('lang' => 'PROFILE_GUESTBOOK_ENABLED',	'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => false),
 						'profile_guestbook_notification'	=> array('lang' => 'PROFILE_GUESTBOOK_NOTIFICATION', 'validate' => 'bool', 'type' => 'radio:yes_no', 'explain' => true),
 
-
 						'legend3'					=> 'ACP_SUBMIT_CHANGES',
 					)
 				);
@@ -81,6 +80,7 @@ class acp_profile_guestbook
 								$confirm = true;
 								$confirm_lang = 'CONFIRM_GB_DELETE_ALL';
 							break;
+							
 							default:
 								$confirm = true;
 								$confirm_lang = 'CONFIRM_OPERATION';
@@ -219,7 +219,7 @@ class acp_profile_guestbook
 									);
 								
 									$sql = 'UPDATE ' . USERS_TABLE . ' SET ' . $db->sql_build_array('UPDATE', $sql_ary) . '
-											WHERE user_id = ' . $uid;
+											WHERE user_id = ' . (int)$uid;
 									$db->sql_query($sql);
 								}
 								$db->sql_freeresult($result);
@@ -247,7 +247,6 @@ class acp_profile_guestbook
 						}
 					}
 				}
-				
 				
 				$latest_version_info = $latest_version = false;
 				if (($latest_version_info = $this->obtain_latest_version_info(request_var('versioncheck_force', false))) === false)
@@ -281,8 +280,8 @@ class acp_profile_guestbook
 				$template->assign_vars(array(
 					'U_VERSIONCHECK_FORCE'	=> $this->u_action . '&amp;versioncheck_force=1',		
 					'S_ACTION_OPTIONS'	=> $auth->acl_get('a_gb_settings') ? true : false, 	
-					'U_ACTION'		=> $this->u_action,	
-					'S_FOUNDER'		=> ($user->data['user_type'] == USER_FOUNDER),
+					'U_ACTION'			=> $this->u_action,	
+					'S_FOUNDER'			=> ($user->data['user_type'] == USER_FOUNDER),
 					
 					'NUMBER_OF_GB'		=> $total_guestbooks,
 					'NUMBER_OF_POSTS'	=> $total_posts,
@@ -445,4 +444,3 @@ class acp_profile_guestbook
 	
 }
 
-?>

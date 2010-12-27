@@ -35,4 +35,3 @@ class acp_profile_guestbook_info
 	}
 }
 
-?>
