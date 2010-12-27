@@ -87,9 +87,9 @@
 				<date>2010-12-27</date>
 				<rev-version>1.0.0-RC2</rev-version>
 				<changelog lang="en">
-					<entry>Bug #30: undefined index in functions_guestbook.php</entry>
-					<entry>Minor code style changes</entry>
-					<entry>Upgraded UMIL to 1.0.4</entry>
+					<change>Bug #30: undefined index in functions_guestbook.php</change>
+					<change>Minor code style changes</change>
+					<change>Upgraded UMIL to 1.0.4</change>
 				</changelog>
 			</entry>
 		</history>
