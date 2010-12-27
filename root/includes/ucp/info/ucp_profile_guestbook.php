@@ -35,4 +35,3 @@ class ucp_profile_guestbook_info
 	}
 }
 
-?>

@@ -88,6 +88,7 @@
 				<rev-version>1.0.0-RC2</rev-version>
 				<changelog lang="en">
 					<entry>Bug #30: undefined index in functions_guestbook.php</entry>
+					<entry>Minor code style changes</entry>
 				</changelog>
 			</entry>
 			<entry>

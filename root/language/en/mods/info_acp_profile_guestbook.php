@@ -45,5 +45,3 @@ $lang = array_merge($lang, array(
 	'LOG_GB_SYNC_ALL_POSTS'		=> '<strong>Synced all Profile Guestbook posts</strong>',
 ));
 
-
-?>

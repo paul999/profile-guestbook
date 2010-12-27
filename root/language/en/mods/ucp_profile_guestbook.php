@@ -53,4 +53,4 @@ $lang = array_merge($lang, array(
 	'NOTIFY_METHOD_ALL'		=> 'PM, jabber and e-mail',
 ));
 
-?>
+
