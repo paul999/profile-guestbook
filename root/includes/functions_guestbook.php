@@ -223,7 +223,6 @@ function submit_gb_post($mode, $subject, $username, &$data, $update_message = tr
 		$db->sql_query($sql);
 		$data['post_id'] = $db->sql_nextid();
 
-
 		unset($sql_data[GUESTBOOK_TABLE]['sql']);
 		
 		$mb = $data['guestbook']->getmember();
@@ -267,7 +266,7 @@ function gb_user_notification ($data)
 	global $db, $config;
 	
 	// First, make sure notifications are enabled	
-	if (!$config['profile_guestbook_notification'] || $data['user_id'] == ANONYMOUS)
+	if (!$config['profile_guestbook_notification'] || $data['user_id'] == ANONYMOUS || $data['user_id'] == $user->data['user_id'])
 	{
 		return false;
 	}
@@ -279,11 +278,13 @@ function gb_user_notification ($data)
 			AND ban_exclude <> 1';
 	$result = $db->sql_query($sql);
 
-	$sql_ignore_users = array(ANONYMOUS/*, $user->data['user_id']*/);
+	$sql_ignore_users = array();
+	
 	while ($row = $db->sql_fetchrow($result))
 	{
 		$sql_ignore_users[] = (int) $row['ban_userid'];
 	}
+	
 	$db->sql_freeresult($result);	
 	
 	$sql = 'SELECT u.user_gb_notification, u.user_gb_notification_enabled, u.user_id, u.username, u.user_email, u.user_lang, u.user_notify_type, u.user_jabber
@@ -306,6 +307,7 @@ function gb_user_notification ($data)
 		'pm'	=> false,
 		'im'	=> false,
 		'mail'	=> false,
+		'upd'	=> false,
 	);
 	
 	switch ($row['user_gb_notification'])
@@ -313,19 +315,21 @@ function gb_user_notification ($data)
 		case GB_NOTIFY_EMAIL:
 			if (!$config['email_enable'])
 			{
-				// Email disabled, and only email selected, return
-				return false;
+				// We need to disable notification, as there is no valid option right now.
+				$send['upd'] = true;
 			}
 			$send['mail'] = true;
 		break;
+		
 		case GB_NOTIFY_IM:
 			if (!$config['jab_enable'])
 			{
-				// IM disabled, and only IM selected, return
-				return false;
+				// We need to disable notification, as there is no valid option right now.
+				$send['upd'] = true;
 			}
 			$send['im'] = true;
 		break;
+		
 		case GB_NOTIFY_PM:
 			$send['pm'] = true;
 		break;
@@ -336,6 +340,7 @@ function gb_user_notification ($data)
 			}
 			$send['pm'] = true;
 		break;
+		
 		case GB_NOTIFY_IM_PM:
 			if ($config['jab_enable'])
 			{
@@ -343,6 +348,7 @@ function gb_user_notification ($data)
 			}
 			$send['pm'] = true;		
 		break;
+		
 		case GB_NOTIFY_ALL:		
 			if ($config['email_enable'])
 			{
@@ -356,8 +362,24 @@ function gb_user_notification ($data)
 			$send['pm'] = true;				
 		break;
 		default: 
-			return false;
+			// We need to disable notification, as there is no valid option right now.
+			$send['upd'] = true;
 	}
+	
+	if ($send['upd'])
+	{
+		$sql_ary = array(
+			'user_gb_notification_enabled'	=> false,
+		);
+
+		$sql = 'UPDATE ' . USERS_TABLE . '
+			SET ' . $db->sql_build_array('UPDATE', $sql_ary) . '
+			WHERE user_id = ' . (int)(int)$data['user_id'];
+		$db->sql_query($sql);
+		
+		return false;
+	}
+	
 	if ($send['mail'] || $send['im'])
 	{
 		global $phpEx, $phpbb_root_path;
