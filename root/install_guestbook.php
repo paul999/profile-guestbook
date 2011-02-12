@@ -261,6 +261,7 @@ $versions = array(
 	'1.0.0-rc1'	=> array(),
 	'1.0.0-rc2-dev'	=> array(),
 	'1.0.0-rc2'	=> array(),
+	'1.0.0-rc3-dev'	=> array(),	
 	'1.0.0'		=> array(),
 );
 
