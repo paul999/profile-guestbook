@@ -57,6 +57,16 @@ class ucp_profile_guestbook
 			{
 				$error[] = 'FORM_INVALID';
 			}
+			
+			if (!$config['jab_enabled'] && in_array($data['notifymethod'], array(GB_NOTIFY_IM, GB_NOTIFY_IM_PM, GB_NOTIFY_ALL))
+			{
+				$error[] = 'GB_JABBER_DISABLED';
+			}
+			
+			if (!$config['email_enabled'] && in_array($data['notifymethod'], array(GB_NOTIFY_EMAIL, GB_NOTIFY_EMAIL_PM, GB_NOTIFY_ALL))
+			{
+				$error[] = 'GB_EMAIL_DISABLED';
+			}			
 
 			if (!sizeof($error))
 			{
@@ -89,6 +99,9 @@ class ucp_profile_guestbook
 			'S_NOTIFY_EMAIL_PM'	=> ($user->data['user_gb_notification'] == GB_NOTIFY_EMAIL_PM) ? true : false,
 			'S_NOTIFY_IM_PM'	=> ($user->data['user_gb_notification'] == GB_NOTIFY_IM_PM) ? true : false,
 			'S_NOTIFY_ALL'		=> ($user->data['user_gb_notification'] == GB_NOTIFY_ALL) ? true : false,
+			
+			'S_JABBER'			=> $config['jab_enable'],
+			'S_EMAIL'			=> $config['email_enabled'],
 			
 			'S_ENABLE_NOTIFICATION'	=> ($user->data['user_gb_notification_enabled']) ? true : false,
 			

@@ -51,6 +51,9 @@ $lang = array_merge($lang, array(
 	'NOTIFY_METHOD_EMAIL_PM'	=> 'PM and e-mail',
 	'NOTIFY_METHOD_IM_PM'		=> 'PM and jabber',
 	'NOTIFY_METHOD_ALL'		=> 'PM, jabber and e-mail',
+	
+	'GB_JABBER_DISABLED'	=> 'Jabber is disabled, select a different notification option',
+	'GB_EMAIL_DISABLED'		=> 'Email is disabled, select a different notification option',	
 ));
 
 
