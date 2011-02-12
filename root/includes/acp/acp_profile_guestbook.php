@@ -267,10 +267,28 @@ class acp_profile_guestbook
 				
 				// Select how many users have a guestbook with posts :)
 				
-				$sql = 'SELECT COUNT(DISTINCT user_id) as total FROM ' . GUESTBOOK_TABLE;
-				$result = $db->sql_query($sql);  
-				$total_guestbooks = $db->sql_fetchfield('total');
-				$db->sql_freeresult($result);
+				if ($db->sql_layer == 'sqlite')
+				{
+					// SQLite does not understand the query below, not sure why yet,
+					// But not that many people use sqlite anyway, and if they use it,
+					// it is on a small database.
+					// Do the counting with php instead.
+					
+					$sql = 'SELECT DISTINCT user_id FROM ' . GUESTBOOK_TABLE;
+					$result = $db->sql_query($sql);
+					
+					$row = $db->sql_fetchrowset($result);
+					$db->sql_freeresult($result);
+					
+					$total_guestbooks = sizeof($row);
+				}
+				else
+				{				
+					$sql = 'SELECT COUNT(DISTINCT user_id) as total FROM ' . GUESTBOOK_TABLE;
+					$result = $db->sql_query($sql);  
+					$total_guestbooks = $db->sql_fetchfield('total');
+					$db->sql_freeresult($result);
+				}
 				
 				$sql = 'SELECT COUNT(post_id) as total FROM ' . GUESTBOOK_TABLE;
 				$result = $db->sql_query($sql);  

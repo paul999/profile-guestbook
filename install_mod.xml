@@ -24,7 +24,7 @@
 				</contributions-group>
 			</author>
 		</author-group>
-		<mod-version>1.0.0-RC2</mod-version>
+		<mod-version>1.0.0-RC3</mod-version>
 		<installation>
 			<level>easy</level>
 			<time>60</time>
@@ -90,6 +90,13 @@
 					<change>Bug #30: undefined index in functions_guestbook.php</change>
 					<change>Minor code style changes</change>
 					<change>Upgraded UMIL to 1.0.4</change>
+				</changelog>
+			</entry>
+			<entry>
+				<date>2010-02-01</date>
+				<rev-version>1.0.0-RC3</rev-version>
+				<changelog lang="en">
+					<change>Bug #35: ACP is not working correctly with SQLite.</change>
 				</changelog>
 			</entry>
 		</history>
