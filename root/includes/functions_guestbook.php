@@ -193,7 +193,6 @@ function submit_gb_post($mode, $subject, $username, &$data, $update_message = tr
 			}
 
 			$sql_data[GUESTBOOK_TABLE]['sql'] = array_merge($sql_data[GUESTBOOK_TABLE]['sql'], array(
-				'poster_id'			=> $data['poster_id'],
 				'icon_id'			=> $data['icon_id'],
 				'enable_bbcode'		=> $data['enable_bbcode'],
 				'enable_smilies'	=> $data['enable_smilies'],
