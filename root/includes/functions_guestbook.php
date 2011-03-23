@@ -193,7 +193,6 @@ function submit_gb_post($mode, $subject, $username, &$data, $update_message = tr
 			}
 
 			$sql_data[GUESTBOOK_TABLE]['sql'] = array_merge($sql_data[GUESTBOOK_TABLE]['sql'], array(
-				'poster_id'			=> $data['poster_id'],
 				'icon_id'			=> $data['icon_id'],
 				'enable_bbcode'		=> $data['enable_bbcode'],
 				'enable_smilies'	=> $data['enable_smilies'],
@@ -263,7 +262,7 @@ function submit_gb_post($mode, $subject, $username, &$data, $update_message = tr
 
 function gb_user_notification ($data)
 {
-	global $db, $config;
+	global $db, $config, $user;
 	
 	// First, make sure notifications are enabled	
 	if (!$config['profile_guestbook_notification'] || $data['user_id'] == ANONYMOUS || $data['user_id'] == $user->data['user_id'])
@@ -287,10 +286,16 @@ function gb_user_notification ($data)
 	
 	$db->sql_freeresult($result);	
 	
+	$where = '';
+	
+	if (sizeof($sql_ignore_users))
+	{
+		$where = $db->sql_in_set('user_id', $sql_ignore_users, true) . ' AND ';
+	}
+	
 	$sql = 'SELECT u.user_gb_notification, u.user_gb_notification_enabled, u.user_id, u.username, u.user_email, u.user_lang, u.user_notify_type, u.user_jabber
 		FROM ' . USERS_TABLE . ' u
-		WHERE ' . $db->sql_in_set('user_id', $sql_ignore_users, true) . '
-			AND u.user_type IN (' . USER_NORMAL . ', ' . USER_FOUNDER . ')		
+		WHERE ' . $where . ' u.user_type IN (' . USER_NORMAL . ', ' . USER_FOUNDER . ')		
 			AND user_id = ' . (int)$data['user_id'];
 		
 	$result = $db->sql_query($sql);
