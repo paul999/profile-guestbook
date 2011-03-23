@@ -99,8 +99,9 @@
 					<change>Bug #32: Missing language item in posting field.</change>
 					<change>Bug #33: Jabber options are displayed if jabber is disabled.</change>					
 					<change>Bug #35: ACP is not working correctly with SQLite.</change>
+					<change>Bug #36: When editing a post the poster_id gets changed.</change>
 					<change>Do not allow to select email or jabber notifications if it is disabled, related to bug #33</change>
-					<change>Disable notification status if a invalid option is listed.
+					<change>Disable notification status if a invalid option is listed.</change>
 				</changelog>
 			</entry>
 		</history>
