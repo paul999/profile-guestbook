@@ -58,12 +58,12 @@ class ucp_profile_guestbook
 				$error[] = 'FORM_INVALID';
 			}
 			
-			if (!$config['jab_enabled'] && in_array($data['notifymethod'], array(GB_NOTIFY_IM, GB_NOTIFY_IM_PM, GB_NOTIFY_ALL))
+			if (!$config['jab_enabled'] && in_array($data['notifymethod'], array(GB_NOTIFY_IM, GB_NOTIFY_IM_PM, GB_NOTIFY_ALL)))
 			{
 				$error[] = 'GB_JABBER_DISABLED';
 			}
 			
-			if (!$config['email_enabled'] && in_array($data['notifymethod'], array(GB_NOTIFY_EMAIL, GB_NOTIFY_EMAIL_PM, GB_NOTIFY_ALL))
+			if (!$config['email_enabled'] && in_array($data['notifymethod'], array(GB_NOTIFY_EMAIL, GB_NOTIFY_EMAIL_PM, GB_NOTIFY_ALL)))
 			{
 				$error[] = 'GB_EMAIL_DISABLED';
 			}			
