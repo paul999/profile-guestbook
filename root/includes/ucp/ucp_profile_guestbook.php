@@ -89,7 +89,6 @@ class ucp_profile_guestbook
 			$error = preg_replace('#^([A-Z_]+)$#e', "(!empty(\$user->lang['\\1'])) ? \$user->lang['\\1'] : '\\1'", $error);
 		}		
 				
-		
 		$template->assign_vars(array(
 			'L_TITLE'			=> $user->lang['UCP_PROFILE_GUESTBOOK_SETTINGS'],
 			'S_SELECT_NOTIFY'	=> ($config['profile_guestbook_notification']) ? true : false,
@@ -101,7 +100,7 @@ class ucp_profile_guestbook
 			'S_NOTIFY_ALL'		=> ($user->data['user_gb_notification'] == GB_NOTIFY_ALL) ? true : false,
 			
 			'S_JABBER'			=> $config['jab_enable'],
-			'S_EMAIL'			=> $config['email_enabled'],
+			'S_EMAIL'			=> $config['email_enable'],
 			
 			'S_ENABLE_NOTIFICATION'	=> ($user->data['user_gb_notification_enabled']) ? true : false,
 			
