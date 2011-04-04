@@ -1,10 +1,11 @@
 <?php
 /**
 *
-* @author Username (Joe Smith) joesmith@example.org
+* @author Paul Sohier
 * @package umil
-* @copyright (c) 2008 phpBB Group
+* @copyright (c) 2011 Paul Sohier
 * @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* @version 1.0.0
 *
 */
 
@@ -201,12 +202,8 @@ $versions = array(
 			),
 		),
 	),
-	'0.0.1-dev2'	=> array(),
 	'0.0.1'		=> array(),
-	'0.0.2-dev1'	=> array(),
-	'0.0.2-dev2'	=> array(),
 	'0.0.2'		=> array(),
-	'0.0.3-dev1'	=> array(),
 	'0.1.0-dev1'	=> array(
 		'permission_add' => array(
 			array('a_gb', 1),
@@ -257,12 +254,10 @@ $versions = array(
 	),
 	'0.1.0'		=> array(),
 	'0.1.1'		=> array(),
-	'1.0.0-rc1-dev'	=> array(),
 	'1.0.0-rc1'	=> array(),
-	'1.0.0-rc2-dev'	=> array(),
 	'1.0.0-rc2'	=> array(),
-	'1.0.0-rc3-dev'	=> array(),
 	'1.0.0-rc3'	=> array(),
+	'1.0.0'		=> array(),
 );
 
 // Include the UMIF Auto file and everything else will be handled automatically.

@@ -2,9 +2,9 @@
 /**
 * acp_permissions_profile_guestbook (phpBB Permission Set) [English]
 *
-* @package language
-* @version $Id: permissions_phpbb.php 9686 2009-06-26 array('lang' => '', 'cat' => 'pg')array('lang' => '', 'cat' => 'pg'):52:54Z rxu $
-* @copyright (c) 2005 phpBB Group
+* @package profile guestbook
+* @version 1.0.0
+* @copyright (c) 2010 Paul Sohier
 * @license http://opensource.org/licenses/gpl-license.php GNU Public License
 */
 
