@@ -22,7 +22,7 @@
 			<dt><label for="notifymethod0">{L_NOTIFY_METHOD}:</label></dt>
 			<dd>
 				<label for="notifymethod0"><input type="radio" name="notifymethod" id="notifymethod0" value="0"<!-- IF S_NOTIFY_EMAIL --> checked="checked"<!-- ENDIF --> /> {L_NOTIFY_METHOD_EMAIL}</label> 
-				<!-- S_JABBER -->
+				<!-- IF S_JABBER -->
 				<label for="notifymethod1"><input type="radio" name="notifymethod" id="notifymethod1" value="1"<!-- IF S_NOTIFY_IM --> checked="checked"<!-- ENDIF --> /> {L_NOTIFY_METHOD_IM}</label>
 				<!-- ENDIF --> 
 				<label for="notifymethod2"><input type="radio" name="notifymethod" id="notifymethod2" value="2"<!-- IF S_NOTIFY_PM --> checked="checked"<!-- ENDIF --> /> {L_NOTIFY_METHOD_PM}</label>
@@ -32,7 +32,7 @@
 				<!-- IF S_JABBER -->
 				<label for="notifymethod4"><input type="radio" name="notifymethod" id="notifymethod4" value="4"<!-- IF S_NOTIFY_IM_PM --> checked="checked"<!-- ENDIF --> /> {L_NOTIFY_METHOD_IM_PM}</label>
 				<!-- ENDIF -->
-				<!-- if S_JABBER and S_EMAIL -->
+				<!-- IF S_JABBER and S_EMAIL -->
 				<label for="notifymethod5"><input type="radio" name="notifymethod" id="notifymethod5" value="5"<!-- IF S_NOTIFY_ALL --> checked="checked"<!-- ENDIF --> /> {L_NOTIFY_METHOD_ALL}</label>
 				<!-- ENDIF -->
 			</dd>
