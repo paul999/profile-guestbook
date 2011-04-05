@@ -105,10 +105,10 @@
 				</changelog>
 			</entry>
 			<entry>
-				<date>2010-12-xx</date>
+				<date>2011-04-04</date>
 				<rev-version>1.0.0</rev-version>
 				<changelog lang="en">
-					<entry>No changes since RC2.</entry>
+					<change>No changes since 1.0.0-RC3</change>
 				</changelog>
 			</entry>
 		</history>
