@@ -259,6 +259,11 @@ $versions = array(
 	'1.0.0-rc3'	=> array(),
 	'1.0.0'		=> array(),
 	'1.1.0-dev1'	=> array(),
+	'1.1.0-dev2'	=> array(
+		'config_add' => array(
+			array('profile_guestbook_post_other', 1),
+		),
+	),
 );
 
 // Include the UMIF Auto file and everything else will be handled automatically.

@@ -58,6 +58,7 @@ class acp_profile_guestbook
 						'legend1'				=> 'ACP_PROFILE_GUESTBOOK_SETTINGS',
 						'profile_guestbook_enabled'		=> array('lang' => 'PROFILE_GUESTBOOK_ENABLED',	'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => false),
 						'profile_guestbook_notification'	=> array('lang' => 'PROFILE_GUESTBOOK_NOTIFICATION', 'validate' => 'bool', 'type' => 'radio:yes_no', 'explain' => true),
+						'profile_guestbook_post_other'		=> array('lang' => 'PROFILE_GUESTBOOK_POST_OTHER', 'validate' => 'bool', 'type' => 'radio:yes_no', 'explain' => true),
 
 						'legend3'					=> 'ACP_SUBMIT_CHANGES',
 					)

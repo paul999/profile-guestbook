@@ -43,6 +43,9 @@ $lang = array_merge($lang, array(
 	
 	'PROFILE_GUESTBOOK_NOTIFICATION'		=> 'Enable guestbook notifications',
 	'PROFILE_GUESTBOOK_NOTIFICATION_EXPLAIN'	=> 'If enabled, users are allowed to receive notifications of new guestbook posts.',
+
+	'PROFILE_GUESTBOOK_POST_OTHER'			=> 'Post quote to authors guestbook',
+	'PROFILE_GUESTBOOK_POST_OTHER_EXPLAIN'		=> 'If enabled, the reply when using quote will be posted to the authors guestbook of the quote',
 	
 
 	'WELCOME_GUESTBOOK'	=> 'Profile Guestbook overview',
