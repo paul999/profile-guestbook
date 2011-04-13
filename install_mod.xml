@@ -24,7 +24,7 @@
 				</contributions-group>
 			</author>
 		</author-group>
-		<mod-version>1.0.0</mod-version>
+		<mod-version>1.0.1</mod-version>
 		<installation>
 			<level>easy</level>
 			<time>60</time>
@@ -110,6 +110,15 @@
 				<changelog lang="en">
 					<change>No changes since 1.0.0-RC3</change>
 				</changelog>
+			</entry>
+			<entry>
+			  <date>2011-xx-xx</date>
+			  <rev-version>1.0.1</rev-version>
+			  <changelog lang="en">
+			    <change>Few spelling mistakes.</change>
+			    <change>Fixed a small security issue (Note, the approved version at phpBB.com already contains this fix.)</change>
+			    <change>Fixed ICQ icon</change>		    
+			  </changelog>
 			</entry>
 		</history>
 	</header>
