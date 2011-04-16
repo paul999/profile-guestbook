@@ -254,6 +254,7 @@ $versions = array(
 	),
 	'0.1.0'		=> array(),
 	'0.1.1'		=> array(),
+
 	'1.0.0-rc1'	=> array(),
 	'1.0.0-rc2'	=> array(),
 	'1.0.0-rc3'	=> array(),
