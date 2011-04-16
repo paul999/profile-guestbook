@@ -3,9 +3,9 @@
 *
 * info_mcp_profile_guestbook [English]
 *
-* @package language
-* @version $Id$
-* @coLOG GB DELETE POSTpyright (c) 2010 Paul Sohier
+* @package profile guestbook
+* @version 1.0.0
+* @copyright (c) 2010 Paul Sohier
 * @license http://opensource.org/licenses/gpl-license.php GNU Public License
 *
 */

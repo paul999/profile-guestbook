@@ -2,8 +2,8 @@
 /**
 * acp_profile_guestbook (phpBB Permission Set) [English]
 *
-* @package language
-* @version $Id$
+* @package profile guestbook
+* @version 1.0.0
 * @copyright (c) 2010 Paul Sohier
 * @license http://opensource.org/licenses/gpl-license.php GNU Public License
 */

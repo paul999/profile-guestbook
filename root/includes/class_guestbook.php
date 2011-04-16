@@ -1,8 +1,8 @@
 <?php
 /**
 *
-* @package phpBB3
-* @version $Id$
+* @package profile guestbook
+* @version 1.0.0
 * @copyright (c) 2010 Paul Sohier
 * @license http://opensource.org/licenses/gpl-license.php GNU Public License
 *
@@ -617,7 +617,7 @@ class guestbook
 
 					if (!empty($row['user_icq']))
 					{
-						$user_cache[$poster_id]['icq'] = 'http://www.icq.com/people/webmsg.php?to=' . $row['user_icq'];
+						$user_cache[$poster_id]['icq'] = 'http://www.icq.com/people/' . $row['user_icq'] .'/';
 						$user_cache[$poster_id]['icq_status_img'] = '<img src="http://web.icq.com/whitepages/online?icq=' . $row['user_icq'] . '&amp;img=5" width="18" height="18" alt="" />';
 					}
 					else
@@ -996,8 +996,6 @@ class guestbook
 
 		// Permission to do the action asked?
 		$is_authed = false;
-		
-		$is_authed = true;
 
 		switch ($mode)
 		{

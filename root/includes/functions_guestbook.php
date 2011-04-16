@@ -1,8 +1,8 @@
 <?php
 /**
 *
-* @package phpBB3
-* @version $Id$
+* @package profile guestbook
+* @version 1.0.0
 * @copyright (c) 2010 Paul Sohier
 * @license http://opensource.org/licenses/gpl-license.php GNU Public License
 *
@@ -104,6 +104,7 @@ function handle_gb_post_delete($post_id, &$post_data, &$guestbook)
 		{
 			confirm_box(false, 'DELETE_POST', $s_hidden_fields);
 		}
+		redirect(append_sid("{$phpbb_root_path}memberlist.$phpEx", "mode=viewprofile&amp;u=" . request_var('u', 0)));
 	}
 
 	// If we are here the user is not able to delete - present the correct error message

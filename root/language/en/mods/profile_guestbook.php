@@ -3,8 +3,8 @@
 *
 * profile_guestbook [English]
 *
-* @package language
-* @version $Id$
+* @package profile guestbook
+* @version 1.0.0
 * @copyright (c) 2010 Paul Sohier
 * @license http://opensource.org/licenses/gpl-license.php GNU Public License
 *
@@ -56,7 +56,7 @@ $lang = array_merge($lang, array(
 $lang = array_merge($lang, array(
 	'NO_POSTS_GUESTBOOK'	=> 'There are currently no posts in this guestbook',
 	'GUESTBOOK'		=> 'Guestbook',
-	'ABOUT_GUESTBOOK'	=> 'Welcome in this guestbook. You can write here your personal thoughts. Have fun posting!',
+	'ABOUT_GUESTBOOK'	=> 'Welcome to this guestbook. Here you can write your personal thoughts. Have fun posting!',
 	
 	'NO_TOPIC_ICON'		=> 'No icon',
 	'RETURN_PROFILE'	=> '%sReturn back to the profile',
@@ -67,10 +67,10 @@ $lang = array_merge($lang, array(
 	'NEW_GUESTBOOK_POST'	=> 'New guestbook post',
 	'NEW_GUESTBOOK_POST_TXT'=> 'Hello,
 
-A new post in your guestbook has been posted:
+A new post has been created in your guestbook:
 
 %s
 
-If you dont want to receive PMs anymore, you can change your settings in your profile.',
+If you do not want to continue receiving PMs, you can change your settings in your profile.',
 ));
 
